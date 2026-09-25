@@ -50,7 +50,7 @@ if (header) {
   }
 }
 
-// Mobile menu (keyboard + ARIA)
+// Mobile menu — ONE close control (header hamburger becomes X)
 if (menuToggle && nav) {
   function setMenuState(open) {
     nav.classList.toggle('open', open);
@@ -60,50 +60,37 @@ if (menuToggle && nav) {
     menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     menuToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     if (open) {
-      const first = nav.querySelector('a, button');
+      var first = nav.querySelector('a');
       if (first) try { first.focus(); } catch (e) {}
     }
   }
-  // Close (X) row inside mobile nav
-  if (!nav.querySelector('.nav-close')) {
-    var bar = document.createElement('div');
-    bar.className = 'nav-close';
-    bar.innerHTML = '<button type="button" aria-label="Close menu">&times;</button>';
-    nav.insertBefore(bar, nav.firstChild);
-    bar.querySelector('button').addEventListener('click', function () { setMenuState(false); });
-  }
 
-  function closeMenu() {
-    setMenuState(false);
-  }
+  function closeMenu() { setMenuState(false); }
+  function openMenu() { setMenuState(true); }
 
-  function openMenu() {
-    setMenuState(true);
-  }
+  // Remove leftover double-X from older deploys
+  nav.querySelectorAll('.nav-close').forEach(function (el) { el.remove(); });
 
   menuToggle.setAttribute('aria-expanded', 'false');
   menuToggle.setAttribute('aria-controls', 'nav');
 
-  menuToggle.addEventListener('click', (e) => {
+  menuToggle.addEventListener('click', function (e) {
     e.stopPropagation();
-    if (nav.classList.contains('open')) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
+    if (nav.classList.contains('open')) closeMenu();
+    else openMenu();
   });
 
-  nav.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => closeMenu());
+  nav.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () { closeMenu(); });
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', function (e) {
     if (nav.classList.contains('open') && !nav.contains(e.target) && !menuToggle.contains(e.target)) {
       closeMenu();
     }
   });
 
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeMenu();
   });
 }
@@ -117,29 +104,29 @@ const API_BASE = window.location.port === '3000' || window.TEG_API
 
 const form = document.getElementById('quoteForm');
 if (form) {
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const name = (form.querySelector('#name') || {}).value || '';
-    const phone = (form.querySelector('#phone') || {}).value || '';
-    const email = (form.querySelector('#email') || {}).value || '';
-    const service = (form.querySelector('#service') || {}).value || '';
-    const message = (form.querySelector('#message') || {}).value || '';
-    const btn = form.querySelector('button[type="submit"]');
-    const original = btn.textContent;
+    var name = (form.querySelector('#name') || {}).value || '';
+    var phone = (form.querySelector('#phone') || {}).value || '';
+    var email = (form.querySelector('#email') || {}).value || '';
+    var service = (form.querySelector('#service') || {}).value || '';
+    var message = (form.querySelector('#message') || {}).value || '';
+    var btn = form.querySelector('button[type="submit"]');
+    var original = btn.textContent;
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
     try {
-      const res = await fetch(API_BASE + '/api/contact', {
+      var res = await fetch(API_BASE + '/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, email, service, message })
+        body: JSON.stringify({ name: name, phone: phone, email: email, service: service, message: message })
       });
-      const data = await res.json().catch(() => ({}));
+      var data = await res.json().catch(function () { return {}; });
       if (res.ok && data.ok) {
         btn.textContent = 'Request Received ✓';
         form.reset();
-        setTimeout(() => {
+        setTimeout(function () {
           btn.textContent = original;
           btn.disabled = false;
         }, 3500);
@@ -147,14 +134,14 @@ if (form) {
       }
       throw new Error(data.error || 'Server error');
     } catch (err) {
-      const subject = encodeURIComponent('Quote Request — T.E.G Carpet Cleaning');
-      const body = encodeURIComponent(
+      var subject = encodeURIComponent('Quote Request — T.E.G Carpet Cleaning');
+      var body = encodeURIComponent(
         'Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email +
         '\nService: ' + service + '\n\nDetails:\n' + message
       );
       window.location.href = 'mailto:contact@teg-carpetsteamcleaning.com?subject=' + subject + '&body=' + body;
       btn.textContent = 'Opening email…';
-      setTimeout(() => {
+      setTimeout(function () {
         btn.textContent = original;
         btn.disabled = false;
       }, 2500);
@@ -162,49 +149,48 @@ if (form) {
   });
 }
 
-const scrollObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
+var scrollObserver = new IntersectionObserver(function (entries) {
+  entries.forEach(function (entry) {
     if (entry.isIntersecting) entry.target.classList.add('visible');
   });
 }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
 
-document.querySelectorAll('.anim-on-scroll').forEach(el => scrollObserver.observe(el));
+document.querySelectorAll('.anim-on-scroll').forEach(function (el) {
+  scrollObserver.observe(el);
+});
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
   anchor.addEventListener('click', function (e) {
-    const id = this.getAttribute('href');
+    var id = this.getAttribute('href');
     if (id.length > 1) {
-      const target = document.querySelector(id);
+      var target = document.querySelector(id);
       if (target) {
         e.preventDefault();
-        const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({ top, behavior: 'smooth' });
+        var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: top, behavior: 'smooth' });
       }
     }
   });
 });
 
 function startPhoneShake() {
-  const phones = document.querySelectorAll('.phone-link, .phone-shake');
+  var phones = document.querySelectorAll('.phone-link, .phone-shake');
   if (!phones.length) return;
-  setInterval(() => {
-    phones.forEach(el => {
+  setInterval(function () {
+    phones.forEach(function (el) {
       el.classList.add('is-shaking');
-      setTimeout(() => el.classList.remove('is-shaking'), 900);
+      setTimeout(function () { el.classList.remove('is-shaking'); }, 900);
     });
   }, 6000);
 }
 startPhoneShake();
 
-/* Permanent SMS float — strip WhatsApp, ensure SMS on every page */
 (function ensureSmsFloat() {
   function run() {
     document.querySelectorAll('a.whatsapp-float, a[href*="wa.me"]').forEach(function (el) {
       if (el.closest && el.closest('.contact-item')) return;
       if (el.classList && el.classList.contains('whatsapp-float')) el.remove();
-      else if (el.getAttribute('href') && el.getAttribute('href').indexOf('wa.me') !== -1 && el.classList.contains('whatsapp-float')) el.remove();
     });
-    document.querySelectorAll('a.whatsapp-float').forEach(function (el) { el.remove(); });
     var existing = document.querySelector('a.sms-float');
     var html = '<svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h10v2H7V9zm0-3h10v2H7V6zm0 6h7v2H7v-2z"/></svg>';
     if (!existing) {
@@ -223,9 +209,6 @@ startPhoneShake();
       if (!existing.querySelector('svg')) existing.innerHTML = html;
     }
   }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else {
-    run();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
 })();
