@@ -72,12 +72,12 @@
       '@context': 'https://schema.org',
       '@graph': [{
         '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
-        '@id': 'https://tegcarpetsteamcleaning.com/#business',
+        '@id': 'https://tegcarpetfurniturecleaning.com/#business',
         'name': 'T.E.G Carpet & Furniture Steam Cleaning',
-        'url': 'https://tegcarpetsteamcleaning.com/',
+        'url': 'https://tegcarpetfurniturecleaning.com/',
         'telephone': '+1-414-775-3705',
         'email': 'contact@teg-carpetsteamcleaning.com',
-        'image': 'https://tegcarpetsteamcleaning.com/favicon.svg',
+        'image': 'https://tegcarpetfurniturecleaning.com/favicon.svg',
         'priceRange': '$$',
         'address': {
           '@type': 'PostalAddress',
@@ -97,10 +97,10 @@
         'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI']
       }, {
         '@type': 'WebSite',
-        '@id': 'https://tegcarpetsteamcleaning.com/#website',
-        'url': 'https://tegcarpetsteamcleaning.com/',
+        '@id': 'https://tegcarpetfurniturecleaning.com/#website',
+        'url': 'https://tegcarpetfurniturecleaning.com/',
         'name': 'T.E.G Carpet & Furniture Steam Cleaning',
-        'publisher': { '@id': 'https://tegcarpetsteamcleaning.com/#business' }
+        'publisher': { '@id': 'https://tegcarpetfurniturecleaning.com/#business' }
       }]
     };
     var s = document.createElement('script');
@@ -149,6 +149,55 @@
     footer.parentNode.insertBefore(bar, footer);
   }
 
+  /* SEO only: inject Reviews link into nav/footer if missing (not AEO) */
+  function ensureReviewsNav() {
+    var navs = document.querySelectorAll('nav.nav, .footer-links');
+    navs.forEach(function (nav) {
+      if (nav.querySelector('a[href="reviews.html"]')) return;
+      var contact = null;
+      nav.querySelectorAll('a').forEach(function (a) {
+        if ((a.getAttribute('href') || '').indexOf('contact.html') !== -1) contact = a;
+      });
+      if (!contact) return;
+      var link = document.createElement('a');
+      link.href = 'reviews.html';
+      link.textContent = 'Reviews';
+      contact.parentNode.insertBefore(link, contact);
+    });
+  }
+
+  /* SEO only: on area-*.html pages, prefix service card titles with city name */
+  function localizeAreaServiceTitles() {
+    var path = (location.pathname || '').split('/').pop() || '';
+    var m = path.match(/^area-(.+)\.html$/i);
+    if (!m) return;
+    var slug = m[1].toLowerCase();
+    var map = {
+      'wauwatosa': 'Wauwatosa', 'brookfield': 'Brookfield', 'new-berlin': 'New Berlin',
+      'west-allis': 'West Allis', 'greenfield': 'Greenfield', 'franklin': 'Franklin',
+      'muskego': 'Muskego', 'pewaukee': 'Pewaukee', 'oak-creek': 'Oak Creek',
+      'elm-grove': 'Elm Grove', 'hales-corners': 'Hales Corners', 'greendale': 'Greendale',
+      'milwaukee': 'Milwaukee'
+    };
+    var city = map[slug];
+    if (!city) return;
+    var renames = [
+      [/^Carpet Cleaning$/i, 'Carpet Cleaning in ' + city],
+      [/^Tile\s*&\s*Grout( Cleaning)?$/i, 'Tile & Grout Cleaning in ' + city],
+      [/^Upholstery( Cleaning)?$/i, 'Upholstery Cleaning in ' + city],
+      [/^Steam Cleaning$/i, 'Steam Cleaning in ' + city],
+      [/^Pet Odor\s*&\s*Stain( Removal)?$/i, 'Pet Odor & Stain Removal in ' + city],
+      [/^Commercial( Carpet Cleaning)?$/i, 'Commercial Carpet Cleaning in ' + city]
+    ];
+    document.querySelectorAll('.services-grid h3, .service-card-img h3, section.services h3').forEach(function (h) {
+      var t = (h.textContent || '').trim();
+      if (t.indexOf(' in ') !== -1) return;
+      for (var i = 0; i < renames.length; i++) {
+        if (renames[i][0].test(t)) { h.textContent = renames[i][1]; break; }
+      }
+    });
+  }
+
   function forceUI() {
     document.querySelectorAll('a[href^="tel:"], a.phone-link, a.phone-shake').forEach(function (a) {
       if (a.closest && (a.closest('.sms-float') || a.closest('.whatsapp-float'))) return;
@@ -172,6 +221,8 @@
     document.querySelectorAll('.logo-text').forEach(function (el) {
       if ((el.textContent || '').indexOf('Furniture') === -1) el.textContent = 'Carpet & Furniture Steam Cleaning';
     });
+    ensureReviewsNav();
+    localizeAreaServiceTitles();
     injectGmbUi();
     injectFooterMap();
     injectContactMapBox();
