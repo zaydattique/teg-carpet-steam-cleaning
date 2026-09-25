@@ -10,7 +10,8 @@ const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'teg2026';
+/* Password: set ADMIN_PASSWORD on the host. Fallback only if env missing (do not commit real secrets). */
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || 'teg2026';
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
@@ -356,5 +357,5 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
   console.log('T.E.G server running on http://localhost:' + PORT);
-  console.log('Admin: set ADMIN_PASSWORD env or default teg2026');
+  console.log('Admin auth: use ADMIN_PASSWORD environment variable');
 });
