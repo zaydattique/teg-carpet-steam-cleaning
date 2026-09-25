@@ -55,12 +55,22 @@ if (menuToggle && nav) {
   function setMenuState(open) {
     nav.classList.toggle('open', open);
     menuToggle.classList.toggle('active', open);
+    menuToggle.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
     menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     if (open) {
-      const first = nav.querySelector('a');
-      if (first) first.focus();
+      const first = nav.querySelector('a, button');
+      if (first) try { first.focus(); } catch (e) {}
     }
+  }
+  // Close (X) row inside mobile nav
+  if (!nav.querySelector('.nav-close')) {
+    var bar = document.createElement('div');
+    bar.className = 'nav-close';
+    bar.innerHTML = '<button type="button" aria-label="Close menu">&times;</button>';
+    nav.insertBefore(bar, nav.firstChild);
+    bar.querySelector('button').addEventListener('click', function () { setMenuState(false); });
   }
 
   function closeMenu() {
@@ -190,7 +200,7 @@ startPhoneShake();
 (function ensureSmsFloat() {
   function run() {
     document.querySelectorAll('a.whatsapp-float, a[href*="wa.me"]').forEach(function (el) {
-      if (el.closest && el.closest('.contact-item')) return; /* leave contact page text links alone if any */
+      if (el.closest && el.closest('.contact-item')) return;
       if (el.classList && el.classList.contains('whatsapp-float')) el.remove();
       else if (el.getAttribute('href') && el.getAttribute('href').indexOf('wa.me') !== -1 && el.classList.contains('whatsapp-float')) el.remove();
     });
