@@ -1,3 +1,12 @@
+/* load admin layout fix (topbar no-wrap + progress styles) */
+(function injectAdminUiFix() {
+  if (document.querySelector('link[href*="admin-ui-fix"]')) return;
+  var l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = 'admin-ui-fix.css';
+  document.head.appendChild(l);
+})();
+
 let serverMode = false, cache = null;
 
 function val(id) {
