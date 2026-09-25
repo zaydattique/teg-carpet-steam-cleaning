@@ -1,12 +1,3 @@
-/* load admin layout fix (topbar no-wrap + progress styles) */
-(function injectAdminUiFix() {
-  if (document.querySelector('link[href*="admin-ui-fix"]')) return;
-  var l = document.createElement('link');
-  l.rel = 'stylesheet';
-  l.href = 'admin-ui-fix.css';
-  document.head.appendChild(l);
-})();
-
 let serverMode = false, cache = null;
 
 function val(id) {
@@ -283,7 +274,42 @@ async function uploadInto(input, targetInput) {
     showToast('Uploaded ✓ — click Save to persist', true);
   } catch (e) {
     hideProgress();
-    showToast('Upload failed', false);
+    showToast('Upload failed: ' + (e && e.message ? e.message : 'error'), false);
+  }
+}
+async function uploadBaImage(input, si, pi, field) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!serverMode) { showToast('Login required to upload', false); return; }
+  si = parseInt(si, 10);
+  pi = parseInt(pi, 10);
+  if (isNaN(si) || isNaN(pi) || (field !== 'before' && field !== 'after')) return;
+  try {
+    showProgress(10, 'Compressing…');
+    const ready = await compressImage(file);
+    showProgress(40, 'Uploading…');
+    const url = await TEG.uploadFile(ready);
+    if (!window._servicesCache) window._servicesCache = [];
+    if (!window._servicesCache[si]) {
+      hideProgress();
+      showToast('Service not found in cache', false);
+      return;
+    }
+    if (!Array.isArray(window._servicesCache[si].beforeAfter)) window._servicesCache[si].beforeAfter = [];
+    while (window._servicesCache[si].beforeAfter.length <= pi) {
+      window._servicesCache[si].beforeAfter.push({ before: '', after: '', caption: '' });
+    }
+    window._servicesCache[si].beforeAfter[pi][field] = url;
+    if (cache) cache.services = window._servicesCache;
+    showProgress(85, 'Saving…');
+    renderBeforeAfterPanel();
+    await saveAll();
+    showProgress(100, 'Done');
+    setTimeout(hideProgress, 400);
+    showToast('Before/After image saved ✓', true);
+  } catch (e) {
+    hideProgress();
+    showToast('Upload failed: ' + (e && e.message ? e.message : 'error'), false);
   }
 }
 function renderServices(list) {
@@ -345,7 +371,17 @@ function baPairHtml(si, pi, p) {
   const before = p.before || '', after = p.after || '', cap = p.caption || '';
   const bPrev = before ? '<img src="' + esc(before) + '" alt="before" onerror="this.style.display=\'none\'" />' : '<div class="thumb-empty">Before</div>';
   const aPrev = after ? '<img src="' + esc(after) + '" alt="after" onerror="this.style.display=\'none\'" />' : '<div class="thumb-empty">After</div>';
-  return '<div class="service-item ba-pair-item" data-si="' + si + '" data-pi="' + pi + '"><button type="button" class="remove" onclick="removeBaPairFor(' + si + ',' + pi + ')">×</button><div class="form-row"><div class="form-group"><label>Before URL</label><input class="ba-before" value="' + esc(before) + '" onchange="syncBaFromDom()" /></div><div class="form-group"><label>After URL</label><input class="ba-after" value="' + esc(after) + '" onchange="syncBaFromDom()" /></div></div><div class="upload-box">Upload before <input type="file" accept="image/*" onchange="uploadInto(this,this.closest(\'.ba-pair-item\').querySelector(\'.ba-before\'));setTimeout(function(){syncBaFromDom();renderBeforeAfterPanel()},500)" /> · Upload after <input type="file" accept="image/*" onchange="uploadInto(this,this.closest(\'.ba-pair-item\').querySelector(\'.ba-after\'));setTimeout(function(){syncBaFromDom();renderBeforeAfterPanel()},500)" /></div><div class="ba-previews">' + bPrev + aPrev + '</div><div class="form-group"><label>Caption</label><input class="ba-caption" value="' + esc(cap) + '" onchange="syncBaFromDom()" /></div></div>';
+  return '<div class="service-item ba-pair-item" data-si="' + si + '" data-pi="' + pi + '">' +
+    '<button type="button" class="remove" onclick="removeBaPairFor(' + si + ',' + pi + ')">×</button>' +
+    '<div class="form-group"><label>Before URL</label><input class="ba-before" value="' + esc(before) + '" onchange="syncBaFromDom()" /></div>' +
+    '<div class="form-group"><label>After URL</label><input class="ba-after" value="' + esc(after) + '" onchange="syncBaFromDom()" /></div>' +
+    '<div class="upload-box">' +
+      '<div class="ba-up-row"><strong>Upload before</strong><br/><input type="file" accept="image/*" onchange="uploadBaImage(this,' + si + ',' + pi + ',\'before\')" /></div>' +
+      '<div class="ba-up-row"><strong>Upload after</strong><br/><input type="file" accept="image/*" onchange="uploadBaImage(this,' + si + ',' + pi + ',\'after\')" /></div>' +
+    '</div>' +
+    '<div class="ba-previews">' + bPrev + aPrev + '</div>' +
+    '<div class="form-group"><label>Caption</label><input class="ba-caption" value="' + esc(cap) + '" onchange="syncBaFromDom()" /></div>' +
+  '</div>';
 }
 function addBaPairFor(si) {
   syncBaFromDom();
