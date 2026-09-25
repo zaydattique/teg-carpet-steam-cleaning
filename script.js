@@ -7,7 +7,7 @@
   document.head.appendChild(s);
 })();
 
-// Hero video: no poster image — dark bg until video is ready, then fade in + play
+// Hero video: no poster — dark bg until ready, then fade in + play
 (function initHeroVideo() {
   var hv = document.getElementById('heroVideo') || document.querySelector('video.hero-video');
   if (!hv) return;
@@ -15,6 +15,7 @@
 
   function markReady() {
     hv.classList.add('is-ready');
+    if (hv.parentElement) hv.parentElement.classList.add('video-ready');
     var p = hv.play();
     if (p && typeof p.catch === 'function') p.catch(function () {});
   }
@@ -36,13 +37,12 @@
   document.addEventListener('click', unlock, { once: true });
 })();
 
-// Header scroll
 const header = document.getElementById('header');
 const menuToggle = document.getElementById('menuToggle');
 const nav = document.getElementById('nav');
 
 if (header) {
-  window.addEventListener('scroll', () => {
+  window.addEventListener('scroll', function () {
     header.classList.toggle('scrolled', window.scrollY > 40);
   });
   if (document.body.classList.contains('page-inner')) {
@@ -50,7 +50,7 @@ if (header) {
   }
 }
 
-// Mobile menu — ONE close control (header hamburger becomes X)
+// Mobile menu — one close (hamburger becomes X)
 if (menuToggle && nav) {
   function setMenuState(open) {
     nav.classList.toggle('open', open);
@@ -64,45 +64,35 @@ if (menuToggle && nav) {
       if (first) try { first.focus(); } catch (e) {}
     }
   }
-
   function closeMenu() { setMenuState(false); }
   function openMenu() { setMenuState(true); }
-
-  // Remove leftover double-X from older deploys
   nav.querySelectorAll('.nav-close').forEach(function (el) { el.remove(); });
-
   menuToggle.setAttribute('aria-expanded', 'false');
   menuToggle.setAttribute('aria-controls', 'nav');
-
   menuToggle.addEventListener('click', function (e) {
     e.stopPropagation();
     if (nav.classList.contains('open')) closeMenu();
     else openMenu();
   });
-
   nav.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () { closeMenu(); });
   });
-
   document.addEventListener('click', function (e) {
     if (nav.classList.contains('open') && !nav.contains(e.target) && !menuToggle.contains(e.target)) {
       closeMenu();
     }
   });
-
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeMenu();
   });
 }
 
-const yearEl = document.getElementById('year');
+var yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-const API_BASE = window.location.port === '3000' || window.TEG_API
-  ? (window.TEG_API || '')
-  : '';
+var API_BASE = window.location.port === '3000' || window.TEG_API ? (window.TEG_API || '') : '';
 
-const form = document.getElementById('quoteForm');
+var form = document.getElementById('quoteForm');
 if (form) {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -115,7 +105,6 @@ if (form) {
     var original = btn.textContent;
     btn.textContent = 'Sending…';
     btn.disabled = true;
-
     try {
       var res = await fetch(API_BASE + '/api/contact', {
         method: 'POST',
@@ -126,25 +115,16 @@ if (form) {
       if (res.ok && data.ok) {
         btn.textContent = 'Request Received ✓';
         form.reset();
-        setTimeout(function () {
-          btn.textContent = original;
-          btn.disabled = false;
-        }, 3500);
+        setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3500);
         return;
       }
       throw new Error(data.error || 'Server error');
     } catch (err) {
       var subject = encodeURIComponent('Quote Request — T.E.G Carpet Cleaning');
-      var body = encodeURIComponent(
-        'Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email +
-        '\nService: ' + service + '\n\nDetails:\n' + message
-      );
+      var body = encodeURIComponent('Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email + '\nService: ' + service + '\n\nDetails:\n' + message);
       window.location.href = 'mailto:contact@teg-carpetsteamcleaning.com?subject=' + subject + '&body=' + body;
       btn.textContent = 'Opening email…';
-      setTimeout(function () {
-        btn.textContent = original;
-        btn.disabled = false;
-      }, 2500);
+      setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 2500);
     }
   });
 }
@@ -154,10 +134,7 @@ var scrollObserver = new IntersectionObserver(function (entries) {
     if (entry.isIntersecting) entry.target.classList.add('visible');
   });
 }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
-
-document.querySelectorAll('.anim-on-scroll').forEach(function (el) {
-  scrollObserver.observe(el);
-});
+document.querySelectorAll('.anim-on-scroll').forEach(function (el) { scrollObserver.observe(el); });
 
 document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
   anchor.addEventListener('click', function (e) {
@@ -211,4 +188,19 @@ startPhoneShake();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
+})();
+
+/* Highlight current page in nav */
+(function markActiveNav() {
+  try {
+    var path = (location.pathname || '/').split('/').pop() || 'index.html';
+    if (!path) path = 'index.html';
+    document.querySelectorAll('.nav a[href]').forEach(function (a) {
+      var href = (a.getAttribute('href') || '').split('/').pop();
+      if (!href) return;
+      if (href === path || (path === 'index.html' && (href === 'index.html' || href === ''))) {
+        a.classList.add('active');
+      }
+    });
+  } catch (e) {}
 })();
