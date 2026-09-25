@@ -33,7 +33,7 @@ const DEFAULT_CONTENT = {
     title: 'T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee',
     description: 'Professional carpet, couch, tile & steam cleaning services by T.E.G Carpet & Furniture Steam Cleaning in Milwaukee, WI. Serving 12 western suburbs.',
     keywords: 'carpet cleaning Milwaukee, steam cleaning Milwaukee, tile grout cleaning, couch cleaning, upholstery cleaning, pet odor removal, commercial carpet cleaning',
-    canonical: 'https://tegcarpetsteamcleaning.com/',
+    canonical: 'https://tegcarpetfurniturecleaning.com/',
     ogTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee',
     ogDescription: 'Professional carpet & steam cleaning in Milwaukee, WI. Upfront pricing, kid & pet safe.',
     ogImage: '',
@@ -81,6 +81,7 @@ const DEFAULT_CONTENT = {
       { label: 'Areas We Serve', href: 'areas.html' },
       { label: 'About', href: 'about.html' },
       { label: 'FAQ', href: 'faq.html' },
+      { label: 'Reviews', href: 'reviews.html' },
       { label: 'Contact', href: 'contact.html' }
     ],
     footer: [
@@ -89,6 +90,7 @@ const DEFAULT_CONTENT = {
       { label: 'Areas We Serve', href: 'areas.html' },
       { label: 'About', href: 'about.html' },
       { label: 'FAQ', href: 'faq.html' },
+      { label: 'Reviews', href: 'reviews.html' },
       { label: 'Contact', href: 'contact.html' }
     ],
     services: [
@@ -280,6 +282,38 @@ app.put('/api/admin/content', requireAdmin, (req, res) => {
   const data = req.body;
   if (!data || typeof data !== 'object') {
     return res.status(400).json({ ok: false, error: 'Invalid content' });
+  }
+  const current = getContent();
+  function preserve(obj, fallback) {
+    if (!fallback || typeof fallback !== 'object') return obj;
+    if (!obj || typeof obj !== 'object') return fallback;
+    const out = Array.isArray(obj) ? obj.slice() : Object.assign({}, fallback, obj);
+    Object.keys(fallback).forEach((k) => {
+      if (obj[k] === '' || obj[k] === null || obj[k] === undefined) {
+        if (fallback[k] !== '' && fallback[k] != null) out[k] = fallback[k];
+      } else if (
+        obj[k] && typeof obj[k] === 'object' && !Array.isArray(obj[k]) &&
+        fallback[k] && typeof fallback[k] === 'object' && !Array.isArray(fallback[k])
+      ) {
+        out[k] = preserve(obj[k], fallback[k]);
+      }
+    });
+    return out;
+  }
+  if (data.media) data.media = preserve(data.media, current.media || {});
+  if (data.pageMedia) data.pageMedia = preserve(data.pageMedia, current.pageMedia || {});
+  if (data.seo) data.seo = preserve(data.seo, current.seo || {});
+  if (data.branding) data.branding = preserve(data.branding, current.branding || {});
+  if (Array.isArray(data.services) && Array.isArray(current.services)) {
+    data.services = data.services.map((s) => {
+      const old = current.services.find((c) => c.href === s.href) || {};
+      return {
+        ...old,
+        ...s,
+        heroImage: s.heroImage || old.heroImage || '',
+        beforeAfter: (Array.isArray(s.beforeAfter) && s.beforeAfter.length) ? s.beforeAfter : (old.beforeAfter || [])
+      };
+    });
   }
   writeJSON(CONTENT_FILE, data);
   res.json({ ok: true, message: 'Content saved' });
