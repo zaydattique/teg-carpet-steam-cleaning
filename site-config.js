@@ -149,7 +149,6 @@
     footer.parentNode.insertBefore(bar, footer);
   }
 
-  /* SEO only: inject Reviews link into nav/footer if missing (not AEO) */
   function ensureReviewsNav() {
     var navs = document.querySelectorAll('nav.nav, .footer-links');
     navs.forEach(function (nav) {
@@ -166,7 +165,6 @@
     });
   }
 
-  /* SEO only: on area-*.html pages, prefix service card titles with city name */
   function localizeAreaServiceTitles() {
     var path = (location.pathname || '').split('/').pop() || '';
     var m = path.match(/^area-(.+)\.html$/i);
@@ -232,5 +230,13 @@
   else forceUI();
   setTimeout(forceUI, 400);
   setTimeout(forceUI, 1200);
+
+  if (!document.querySelector('script[src*="cms-apply"]')) {
+    var cms = document.createElement('script');
+    cms.src = 'cms-apply.js';
+    cms.defer = true;
+    (document.body || document.documentElement).appendChild(cms);
+  }
+
   window.TEG_SITE = { forceUI: forceUI, AEO_ENABLED: AEO_ENABLED };
 })();
