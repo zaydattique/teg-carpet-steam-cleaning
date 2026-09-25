@@ -6,7 +6,95 @@
 <title>T.E.G Admin — Full CMS Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,system-ui,sans-serif;background:#f1f5f9;color:#1a1a1a;min-height:100vh}.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.login-box{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.08);width:100%;max-width:380px;text-align:center}.login-box h1{font-size:22px;margin-bottom:8px;color:#0a3d6b}.login-box p{font-size:14px;color:#64748b;margin-bottom:28px}.login-box input{width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:15px;margin-bottom:16px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;font-size:15px;font-weight:600;border-radius:8px;border:none;cursor:pointer;text-decoration:none}.btn-primary{background:#f5a623;color:#1a1a1a}.btn-secondary{background:#0a3d6b;color:#fff}.btn-outline{background:#fff;border:1px solid #e2e8f0;color:#1a1a1a}.btn-sm{padding:8px 14px;font-size:13px}.btn-danger{background:#fee2e2;color:#b91c1c}.hidden{display:none!important}.dashboard{display:none}.dashboard.active{display:block}.topbar{background:#0a3d6b;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:8px;flex-wrap:wrap}.topbar h1{font-size:18px}.topbar .actions{display:flex;gap:10px;flex-wrap:wrap}.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 56px)}.sidebar{background:#fff;border-right:1px solid #e2e8f0;padding:12px 0;overflow-y:auto}.sidebar button{display:block;width:100%;text-align:left;padding:11px 18px;border:none;background:none;font-size:13px;font-weight:500;color:#475569;cursor:pointer}.sidebar button:hover,.sidebar button.active{background:#e0f2fe;color:#0369a1;border-right:3px solid #0ea5e9}.sidebar .group{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;padding:14px 18px 6px}.main{padding:24px 28px;max-width:920px}.panel{display:none;background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0}.panel.active{display:block}.panel h2{font-size:18px;margin-bottom:4px;color:#0a3d6b}.panel .desc{font-size:13px;color:#64748b;margin-bottom:18px}.form-group{margin-bottom:14px}.form-group label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:5px}.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit}.form-group textarea{min-height:72px;resize:vertical}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.upload-box{border:2px dashed #bae6fd;border-radius:10px;padding:14px;text-align:center;background:#f0f9ff;margin-bottom:10px;font-size:13px;color:#0369a1}.upload-box input[type=file]{margin-top:8px;max-width:100%}.preview{max-width:160px;max-height:80px;margin-top:8px;border-radius:6px;display:none}.preview.show{display:block}.nav-item,.service-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;position:relative}.nav-item .remove,.service-item .remove{position:absolute;top:10px;right:10px;background:#fee2e2;color:#b91c1c;border:none;width:28px;height:28px;border-radius:6px;cursor:pointer}.actions-bar{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;margin:16px 0 8px}.note{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 14px;font-size:13px;color:#0369a1;margin-bottom:14px}.toast{position:fixed;bottom:24px;right:24px;background:#0a3d6b;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:100}.toast.show{opacity:1}.status{font-size:12px;color:#64748b;margin-bottom:12px}.badge{display:inline-block;background:#22c55e;color:#fff;font-size:10px;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle}.sub-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px}.sub-card h4{font-size:14px;margin-bottom:4px}.sub-card p{font-size:13px;color:#64748b}.sidebar-toggle{display:none;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;cursor:pointer}.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:40}.ba-service-block{border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:16px;background:#f8fafc}.ba-service-block h3{font-size:15px;color:#0a3d6b;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.ba-service-block h3 span{font-size:11px;font-weight:600;color:#64748b;background:#e2e8f0;padding:3px 8px;border-radius:99px}.ba-pair-item{background:#fff}.ba-previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.ba-previews img{width:100%;max-width:140px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;background:#fff}.thumb-empty{width:100%;max-width:140px;height:90px;border-radius:8px;border:1px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:11px;color:#94a3b8;background:#fff}@media(max-width:900px){.sidebar-toggle{display:inline-flex}.layout{grid-template-columns:1fr}.sidebar{position:fixed;left:0;top:0;bottom:0;width:min(280px,86vw);z-index:45;transform:translateX(-105%);transition:transform .25s ease;box-shadow:4px 0 24px rgba(0,0,0,.12);padding-top:56px}.sidebar.open{transform:translateX(0)}.sidebar-backdrop.show{display:block}.main{padding:16px;max-width:100%}.panel{padding:16px;border-radius:10px}.topbar{padding:10px 12px}.topbar h1{font-size:15px}.topbar .actions{gap:6px}.topbar .actions .btn-sm{padding:7px 10px;font-size:12px}.form-row{grid-template-columns:1fr}.login-box{padding:28px 20px}.toast{left:12px;right:12px;bottom:12px}.upload-box{padding:12px;text-align:left}.preview{max-width:100%;height:auto}.ba-previews img,.thumb-empty{max-width:calc(50% - 5px)}.service-item .remove,.nav-item .remove,.ba-pair-item .remove{width:36px;height:36px;font-size:18px}.btn{min-height:44px}.btn-sm{min-height:40px}input,textarea,select{font-size:16px!important}}@media(max-width:480px){.panel h2{font-size:16px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{max-width:100vw;overflow-x:hidden;font-family:Inter,system-ui,sans-serif;background:#f1f5f9;color:#1a1a1a;min-height:100vh}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.08);width:100%;max-width:380px;text-align:center}
+.login-box h1{font-size:22px;margin-bottom:8px;color:#0a3d6b}
+.login-box p{font-size:14px;color:#64748b;margin-bottom:28px}
+.login-box input{width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:15px;margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;font-size:15px;font-weight:600;border-radius:8px;border:none;cursor:pointer;text-decoration:none}
+.btn-primary{background:#f5a623;color:#1a1a1a}
+.btn-secondary{background:#0a3d6b;color:#fff}
+.btn-outline{background:#fff;border:1px solid #e2e8f0;color:#1a1a1a}
+.btn-sm{padding:8px 14px;font-size:13px}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+.hidden{display:none!important}
+.dashboard{display:none}.dashboard.active{display:block}
+.topbar{background:#0a3d6b;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:12px;flex-wrap:nowrap;min-height:56px}
+.topbar h1{font-size:16px;margin:0;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .actions{display:flex;align-items:center;gap:8px;flex:0 0 auto;flex-wrap:nowrap;margin-left:auto}
+.topbar .actions .btn{flex-shrink:0;white-space:nowrap}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 56px)}
+.sidebar{background:#fff;border-right:1px solid #e2e8f0;padding:12px 0;overflow-y:auto}
+.sidebar button{display:block;width:100%;text-align:left;padding:11px 18px;border:none;background:none;font-size:13px;font-weight:500;color:#475569;cursor:pointer}
+.sidebar button:hover,.sidebar button.active{background:#e0f2fe;color:#0369a1;border-right:3px solid #0ea5e9}
+.sidebar .group{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;padding:14px 18px 6px}
+.main{padding:24px 28px;max-width:920px;overflow-x:hidden}
+.panel{display:none;background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0;max-width:100%;overflow-x:hidden;box-sizing:border-box}
+.panel.active{display:block}
+.panel h2{font-size:18px;margin-bottom:4px;color:#0a3d6b}
+.panel .desc{font-size:13px;color:#64748b;margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:5px}
+.form-group input,.form-group textarea,.form-group select{width:100%;max-width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box}
+.form-group textarea{min-height:72px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.upload-box{border:2px dashed #bae6fd;border-radius:10px;padding:14px;text-align:center;background:#f0f9ff;margin-bottom:10px;font-size:13px;color:#0369a1;overflow:hidden;word-break:break-word}
+.upload-box input[type=file]{margin-top:8px;max-width:100%;width:100%}
+.preview{max-width:160px;max-height:80px;margin-top:8px;border-radius:6px;display:none}
+.preview.show{display:block}
+.nav-item,.service-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;position:relative;max-width:100%;overflow:hidden;box-sizing:border-box}
+.nav-item .remove,.service-item .remove{position:absolute;top:10px;right:10px;background:#fee2e2;color:#b91c1c;border:none;width:28px;height:28px;border-radius:6px;cursor:pointer}
+.actions-bar{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;margin:16px 0 8px}
+.note{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 14px;font-size:13px;color:#0369a1;margin-bottom:14px}
+.toast{position:fixed;bottom:24px;right:24px;background:#0a3d6b;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:90vw}
+.toast.show{opacity:1}
+.toast.toast-ok{background:#15803d!important}
+.toast.toast-err{background:#b91c1c!important}
+.status{font-size:12px;color:#64748b;margin-bottom:12px}
+.badge{display:inline-block;background:#22c55e;color:#fff;font-size:10px;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.sub-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px}
+.sub-card h4{font-size:14px;margin-bottom:4px}.sub-card p{font-size:13px;color:#64748b}
+.sidebar-toggle{display:none;background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:40}
+.ba-service-block{border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:16px;background:#f8fafc;max-width:100%;overflow:hidden;box-sizing:border-box}
+.ba-service-block h3{font-size:15px;color:#0a3d6b;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ba-service-block h3 span{font-size:11px;font-weight:600;color:#64748b;background:#e2e8f0;padding:3px 8px;border-radius:99px}
+.ba-pair-item{background:#fff;max-width:100%;overflow:hidden}
+.ba-previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.ba-previews img,.thumb-empty{width:100%;max-width:calc(50% - 5px);height:90px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;background:#fff;box-sizing:border-box}
+.thumb-empty{display:flex;align-items:center;justify-content:center;font-size:11px;color:#94a3b8;border-style:dashed}
+.ba-up-row{margin-bottom:10px;text-align:left}
+.ba-up-row:last-child{margin-bottom:0}
+#uploadProgress{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(120%);z-index:200;background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;min-width:260px;max-width:90vw;box-shadow:0 10px 40px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.25s}
+#uploadProgress.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#uploadProgress .up-label{font-size:12px;margin-bottom:8px;font-weight:600}
+#uploadProgress .up-track{height:8px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+#uploadProgress .up-fill{height:100%;width:0;background:linear-gradient(90deg,#0ea5e9,#22c55e);border-radius:99px;transition:width .2s}
+@media(max-width:900px){
+.sidebar-toggle{display:inline-flex}
+.layout{grid-template-columns:1fr}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:min(280px,86vw);z-index:45;transform:translateX(-105%);transition:transform .25s ease;box-shadow:4px 0 24px rgba(0,0,0,.12);padding-top:56px}
+.sidebar.open{transform:translateX(0)}
+.sidebar-backdrop.show{display:block}
+.main{padding:12px;max-width:100%}
+.panel{padding:14px;border-radius:10px}
+.topbar{padding:10px 12px;flex-wrap:wrap}
+.topbar h1{font-size:14px;max-width:100%}
+.topbar .actions{gap:6px;flex-wrap:wrap;width:100%;justify-content:flex-end}
+.topbar .actions .btn-sm{padding:7px 10px;font-size:12px}
+.form-row{grid-template-columns:1fr!important}
+.login-box{padding:28px 20px}
+.toast{left:12px;right:12px;bottom:12px}
+.upload-box{padding:12px;text-align:left}
+.preview{max-width:100%;height:auto}
+.service-item .remove,.nav-item .remove,.ba-pair-item .remove{width:36px;height:36px;font-size:18px}
+.btn{min-height:44px}.btn-sm{min-height:40px}
+input,textarea,select{font-size:16px!important}
+}
+@media(max-width:480px){.panel h2{font-size:16px}}
 </style>
 </head>
 <body>
@@ -54,7 +142,6 @@
 </aside>
 <main class="main">
 <p class="status" id="connStatus"></p>
-
 <div class="panel active" id="panel-branding">
 <h2>Branding & Logo</h2>
 <p class="desc">Empty logo/favicon = keep text logo until you upload.</p>
@@ -71,7 +158,6 @@
 <div class="upload-box">Upload favicon<br/><input type="file" accept="image/*,.ico,.svg" onchange="serverUpload(this,'media-favicon','favPreview')" /><img id="favPreview" class="preview" alt="" /></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save Branding</button></div>
 </div>
-
 <div class="panel" id="panel-contact">
 <h2>Phone, WhatsApp, Address</h2>
 <div class="form-row">
@@ -95,7 +181,6 @@
 <div class="form-group"><label>Hours</label><input id="contact-hours" /></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save Contact</button></div>
 </div>
-
 <div class="panel" id="panel-media">
 <h2>Media & Uploads</h2>
 <div class="note">Prefer a <strong>hero image</strong> for speed. Nothing is hardcoded — empty = no media until you upload.</div>
@@ -114,7 +199,6 @@
 <div class="upload-box">Upload about<br/><input type="file" accept="image/*" onchange="serverUpload(this,'media-aboutImage','aboutPreview')" /><img id="aboutPreview" class="preview" alt="" /></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save Media</button></div>
 </div>
-
 <div class="panel" id="panel-pageheroes">
 <h2>Page hero images</h2>
 <p class="desc">One image for Services page and one for Areas page. Service detail pages use the image set on that service.</p>
@@ -130,14 +214,12 @@
 <div class="upload-box">Upload<br/><input type="file" accept="image/*" onchange="serverUpload(this,'pm-contact',null)" /></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save page heroes</button></div>
 </div>
-
 <div class="panel" id="panel-beforeafter">
 <h2>Before / After galleries</h2>
 <div class="note">Har service ke neeche uske pairs. Ek dafa upload — service pages + area pages auto use karte hain. Existing images delete nahi hoti jab tak aap remove na karo.</div>
 <div id="baAllServices"></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveBaThenAll()">Save galleries</button></div>
 </div>
-
 <div class="panel" id="panel-seo">
 <h2>Global SEO</h2>
 <div class="form-group"><label>Page title</label><input id="seo-title" /></div>
@@ -153,7 +235,6 @@
 <div class="form-group"><label>Twitter image</label><input id="seo-twitterImage" /></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save SEO</button></div>
 </div>
-
 <div class="panel" id="panel-pages-seo">
 <h2>Per-page SEO</h2>
 <div class="form-group"><label>Select page</label>
@@ -177,7 +258,6 @@
 <div class="form-group"><label>Canonical</label><input id="page-canonical" /></div>
 <div class="actions-bar"><button class="btn btn-outline btn-sm" onclick="clearPageSeo()">Clear</button><button class="btn btn-primary" onclick="savePageSeoThenAll()">Save</button></div>
 </div>
-
 <div class="panel" id="panel-location">
 <h2>Location / GMB</h2>
 <div class="form-group"><label>Business name</label><input id="loc-name" /></div>
@@ -187,25 +267,39 @@
 <div class="form-row"><div class="form-group"><label>Lat</label><input id="loc-lat" /></div><div class="form-group"><label>Lng</label><input id="loc-lng" /></div></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save Location</button></div>
 </div>
-
 <div class="panel" id="panel-services">
-<h2>Services + SEO + hero image</h2>
+<h2>Services + SEO</h2>
 <div id="servicesList"></div>
 <button class="btn btn-outline btn-sm" onclick="addService()">+ Add service</button>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save Services</button></div>
 </div>
-
-<div class="panel" id="panel-nav-main"><h2>Main Nav</h2><div id="navMainList"></div><button class="btn btn-outline btn-sm" onclick="addNavItem('main')">+ Add</button><div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save</button></div></div>
-<div class="panel" id="panel-nav-footer"><h2>Footer Nav</h2><div id="navFooterList"></div><button class="btn btn-outline btn-sm" onclick="addNavItem('footer')">+ Add</button><div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save</button></div></div>
-<div class="panel" id="panel-nav-services"><h2>Services Nav</h2><div id="navServicesList"></div><button class="btn btn-outline btn-sm" onclick="addNavItem('services')">+ Add</button><div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save</button></div></div>
-
-<div class="panel" id="panel-inbox"><h2>Quote Inbox</h2><div id="inboxList"></div></div>
-<div class="panel" id="panel-help"><h2>Help</h2><div class="note">1. Login with server running.<br/>2. Media → upload homepage hero image.<br/>3. Before/After → har service ke neeche pairs add/upload, Save. Existing media safe rehti hai.<br/>4. Page heroes → set Services / Areas images.<br/>5. Hard refresh (Ctrl+Shift+R) after deploy.</div></div>
+<div class="panel" id="panel-nav-main">
+<h2>Main Nav</h2><div id="navMainList"></div>
+<button class="btn btn-outline btn-sm" onclick="addNavItem('main')">+ Add</button>
+<div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save</button></div>
+</div>
+<div class="panel" id="panel-nav-footer">
+<h2>Footer Nav</h2><div id="navFooterList"></div>
+<button class="btn btn-outline btn-sm" onclick="addNavItem('footer')">+ Add</button>
+<div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save</button></div>
+</div>
+<div class="panel" id="panel-nav-services">
+<h2>Services Nav</h2><div id="navServicesList"></div>
+<button class="btn btn-outline btn-sm" onclick="addNavItem('services')">+ Add</button>
+<div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save</button></div>
+</div>
+<div class="panel" id="panel-inbox">
+<h2>Quote Inbox</h2><div id="inboxList"></div>
+</div>
+<div class="panel" id="panel-help">
+<h2>Help</h2>
+<p class="desc">Login → upload media → Save. Before/After: each service has its own pairs; one upload applies site-wide for that service.</p>
+</div>
 </main>
 </div>
 </div>
 <div class="toast" id="toast"></div>
-<script src="admin-api.js"></script>
+<script src="cms-api.js"></script>
 <script src="admin-panel.js"></script>
 </body>
 </html>
