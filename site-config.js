@@ -1,9 +1,9 @@
 /**
- * T.E.G — UI + LocalBusiness schema (SEO) — AEO/GMB CTAs gated
- * AEO_ENABLED = false until client pays for GMB/AEO package
+ * T.E.G — UI + LocalBusiness schema + AEO/GMB CTAs
+ * AEO_ENABLED = true — AI/GMB optimization active
  */
 (function () {
-  var AEO_ENABLED = false;
+  var AEO_ENABLED = true;
 
   var GMB = 'https://g.page/teg-carpet-steam-cleaning';
   var GMB_REVIEW = 'https://g.page/teg-carpet-steam-cleaning/review';
@@ -27,17 +27,21 @@
       '@media (min-width:769px){',
       '.header .container{padding-left:28px!important;padding-right:28px!important;max-width:100%!important}',
       '.header-inner{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;width:100%!important;flex-wrap:nowrap!important}',
-      '.header .nav{display:flex!important;flex:1 1 auto!important;flex-wrap:nowrap!important;justify-content:center!important;align-items:center!important;gap:clamp(8px,1.2vw,18px)!important;min-width:0!important;overflow:visible!important}',
-      '.header .nav > a{white-space:nowrap!important;font-size:clamp(12px,1.15vw,14px)!important;flex-shrink:0!important}',
-      '.header .logo{flex:0 0 auto!important;max-width:min(220px,28vw)!important}',
-      '.header .logo-text{font-size:clamp(11px,1.1vw,14px)!important}',
-      '.header-actions{display:flex!important;align-items:center!important;gap:10px!important;border:none!important;flex:0 0 auto!important;flex-wrap:nowrap!important}',
+      '.header .nav{display:flex!important;flex:1 1 auto!important;flex-wrap:nowrap!important;justify-content:center!important;align-items:center!important;gap:clamp(8px,1.2vw,18px)!important;min-width:0!important}',
+      '.header .nav > a{white-space:nowrap!important;font-size:clamp(12px,1.15vw,14px)!important}',
+      '.header-actions{display:flex!important;align-items:center!important;gap:10px!important;border:none!important;flex:0 0 auto!important}',
       '}',
       '.header-actions .phone-link{display:inline-flex!important;padding:7px 14px!important;border-radius:10px!important;border:2px solid #0ea5e9!important;background:transparent!important;color:#0ea5e9!important;font-weight:600!important;white-space:nowrap!important}',
       'body:not(.page-inner) .header:not(.scrolled) .header-actions .phone-link{border-color:rgba(255,255,255,.75)!important;color:#fff!important}',
       'a.btn.phone-shake,a.btn[href^="tel:"]{background:transparent!important;border:2px solid #0ea5e9!important;color:#0ea5e9!important;box-shadow:none!important}',
       '.cta-banner a.btn.phone-shake,.hero a.btn.phone-shake{border-color:rgba(255,255,255,.85)!important;color:#fff!important;background:transparent!important}',
       '.page-hero a.btn.phone-shake,.hero-ctas a.btn.phone-shake{background:transparent!important;border:2px solid #0ea5e9!important;color:#0ea5e9!important}',
+      '.teg-gmb-bar{position:relative;background:#071a2e;color:#fff;padding:36px 20px 40px;text-align:center;border-top:1px solid rgba(255,255,255,.08)}',
+      '.teg-gmb-bar p{margin:0 0 20px;font-size:16px;line-height:1.5;max-width:520px;margin-left:auto;margin-right:auto}',
+      '.teg-gmb-bar .teg-gmb-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}',
+      '.teg-gmb-bar a{display:inline-flex;padding:13px 22px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;min-width:200px;justify-content:center}',
+      '.teg-gmb-bar a.teg-review{border:2px solid #4285F4;color:#4285F4;background:transparent}',
+      '.teg-gmb-bar a.teg-maps{background:#0ea5e9;color:#fff}',
       '.teg-footer-map{margin:0 0 28px;padding:0 0 24px;border-bottom:1px solid rgba(255,255,255,.1)}',
       '.teg-footer-map-inner{background:linear-gradient(145deg,rgba(14,165,233,.12),rgba(7,26,46,.9));border:1px solid rgba(125,211,252,.25);border-radius:16px;overflow:hidden}',
       '.teg-footer-map-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:rgba(10,61,107,.55)}',
@@ -58,8 +62,6 @@
       '.teg-contact-map-box .teg-map-actions a.primary{background:#0ea5e9;color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none}',
       '.teg-contact-map-box .teg-map-actions a.ghost{border:2px solid rgba(255,255,255,.35);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none}',
       '@media (max-width:900px){.teg-contact-map-box .teg-map-top{grid-template-columns:1fr}}',
-      '.hero-video-wrap.has-hero-image{background-size:cover;background-position:center}',
-      '.hero-video-wrap.has-hero-image .hero-video{display:none!important}',
       '.ba-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:28px}',
       '.ba-pair{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}',
       '.ba-pair .ba-imgs{display:grid;grid-template-columns:1fr 1fr}',
@@ -76,6 +78,8 @@
         '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
         '@id': 'https://tegcarpetfurniturecleaning.com/#business',
         'name': 'T.E.G Carpet & Furniture Steam Cleaning',
+        'alternateName': ['TEG Carpet Steam Cleaning', 'T.E.G Carpet Steam Cleaning'],
+        'description': 'Professional carpet cleaning, steam cleaning, tile and grout, upholstery, pet odor and stain removal, and commercial carpet cleaning in Milwaukee, WI and western suburbs. Upfront pricing, kid and pet safe, licensed and insured, available 24/7.',
         'url': 'https://tegcarpetfurniturecleaning.com/',
         'telephone': '+1-414-775-3705',
         'email': 'contact@teg-carpetsteamcleaning.com',
@@ -96,7 +100,22 @@
           'opens': '00:00',
           'closes': '23:59'
         },
-        'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI']
+        'aggregateRating': { '@type': 'AggregateRating', 'ratingValue': '5.0', 'reviewCount': '32', 'bestRating': '5', 'worstRating': '1' },
+        'knowsAbout': ['carpet cleaning','steam cleaning','tile and grout cleaning','upholstery cleaning','pet odor removal','stain removal','commercial carpet cleaning','hot water extraction'],
+        'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI'],
+        'sameAs': ['https://g.page/teg-carpet-steam-cleaning'],
+        'hasOfferCatalog': {
+          '@type': 'OfferCatalog',
+          'name': 'Cleaning services',
+          'itemListElement': [
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-carpet-cleaning.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Tile and Grout Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-tile-grout.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Upholstery Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-couch-cleaning.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Steam Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-steam-cleaning.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Pet Odor and Stain Removal','url':'https://tegcarpetfurniturecleaning.com/service-stain-removal.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Commercial Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-commercial.html'}}
+          ]
+        }
       }, {
         '@type': 'WebSite',
         '@id': 'https://tegcarpetfurniturecleaning.com/#website',
@@ -132,9 +151,7 @@
     var box = document.createElement('div');
     box.id = 'teg-contact-map-box';
     box.className = 'teg-contact-map-box';
-    var gbp = AEO_ENABLED
-      ? '<a class="ghost" href="' + GMB + '" target="_blank" rel="noopener">Google Business Profile</a>'
-      : '';
+    var gbp = AEO_ENABLED ? '<a class="ghost" href="' + GMB + '" target="_blank" rel="noopener">Google Business Profile</a>' : '';
     box.innerHTML = '<div class="teg-map-top"><div class="teg-map-info"><h2>Our location</h2><p>Milwaukee and western suburbs.</p><div class="teg-addr-line"><strong>Address</strong><br>4111 N Port Washington Rd suite 1<br>Milwaukee, WI 53217</div><div class="teg-addr-line"><strong>Phone</strong><br><a href="tel:+14147753705">Call Now</a></div><div class="teg-addr-line"><strong>Hours</strong><br>24/7 — Always Available</div><div class="teg-map-actions"><a class="primary" href="' + MAP_LINK + '" target="_blank" rel="noopener">Get directions</a>' + gbp + '</div></div><div class="teg-map-frame"><iframe title="Map" width="600" height="320" style="border:0" loading="lazy" src="' + MAP_EMBED + '" allowfullscreen></iframe></div></div>';
     section.appendChild(box);
   }
@@ -147,13 +164,12 @@
     var bar = document.createElement('div');
     bar.id = 'teg-gmb-bar';
     bar.className = 'teg-gmb-bar';
-    bar.innerHTML = '<p>Happy with your clean? <strong>Leave a Google review</strong>.</p><div class="teg-gmb-actions"><a class="teg-review" href="' + GMB_REVIEW + '" target="_blank" rel="noopener">Write a Google Review</a><a class="teg-maps" href="' + GMB + '" target="_blank" rel="noopener">View on Google Maps</a></div>';
+    bar.innerHTML = '<p>Happy with your clean? <strong>Leave a Google review</strong> — it helps neighbors in Milwaukee find us.</p><div class="teg-gmb-actions"><a class="teg-review" href="' + GMB_REVIEW + '" target="_blank" rel="noopener">Write a Google Review</a><a class="teg-maps" href="' + GMB + '" target="_blank" rel="noopener">View on Google Maps</a></div>';
     footer.parentNode.insertBefore(bar, footer);
   }
 
   function ensureReviewsNav() {
-    var navs = document.querySelectorAll('nav.nav, .footer-links');
-    navs.forEach(function (nav) {
+    document.querySelectorAll('nav.nav, .footer-links').forEach(function (nav) {
       if (nav.querySelector('a[href="reviews.html"]')) return;
       var contact = null;
       nav.querySelectorAll('a').forEach(function (a) {
@@ -171,24 +187,10 @@
     var path = (location.pathname || '').split('/').pop() || '';
     var m = path.match(/^area-(.+)\.html$/i);
     if (!m) return;
-    var slug = m[1].toLowerCase();
-    var map = {
-      'wauwatosa': 'Wauwatosa', 'brookfield': 'Brookfield', 'new-berlin': 'New Berlin',
-      'west-allis': 'West Allis', 'greenfield': 'Greenfield', 'franklin': 'Franklin',
-      'muskego': 'Muskego', 'pewaukee': 'Pewaukee', 'oak-creek': 'Oak Creek',
-      'elm-grove': 'Elm Grove', 'hales-corners': 'Hales Corners', 'greendale': 'Greendale',
-      'milwaukee': 'Milwaukee'
-    };
-    var city = map[slug];
+    var map = { 'wauwatosa': 'Wauwatosa', 'brookfield': 'Brookfield', 'new-berlin': 'New Berlin', 'west-allis': 'West Allis', 'greenfield': 'Greenfield', 'franklin': 'Franklin', 'muskego': 'Muskego', 'pewaukee': 'Pewaukee', 'oak-creek': 'Oak Creek', 'elm-grove': 'Elm Grove', 'hales-corners': 'Hales Corners', 'greendale': 'Greendale', 'milwaukee': 'Milwaukee' };
+    var city = map[m[1].toLowerCase()];
     if (!city) return;
-    var renames = [
-      [/^Carpet Cleaning$/i, 'Carpet Cleaning in ' + city],
-      [/^Tile\s*&\s*Grout( Cleaning)?$/i, 'Tile & Grout Cleaning in ' + city],
-      [/^Upholstery( Cleaning)?$/i, 'Upholstery Cleaning in ' + city],
-      [/^Steam Cleaning$/i, 'Steam Cleaning in ' + city],
-      [/^Pet Odor\s*&\s*Stain( Removal)?$/i, 'Pet Odor & Stain Removal in ' + city],
-      [/^Commercial( Carpet Cleaning)?$/i, 'Commercial Carpet Cleaning in ' + city]
-    ];
+    var renames = [[/^Carpet Cleaning$/i, 'Carpet Cleaning in ' + city], [/^Tile\s*&\s*Grout( Cleaning)?$/i, 'Tile & Grout Cleaning in ' + city], [/^Upholstery( Cleaning)?$/i, 'Upholstery Cleaning in ' + city], [/^Steam Cleaning$/i, 'Steam Cleaning in ' + city], [/^Pet Odor\s*&\s*Stain( Removal)?$/i, 'Pet Odor & Stain Removal in ' + city], [/^Commercial( Carpet Cleaning)?$/i, 'Commercial Carpet Cleaning in ' + city]];
     document.querySelectorAll('.services-grid h3, .service-card-img h3, section.services h3').forEach(function (h) {
       var t = (h.textContent || '').trim();
       if (t.indexOf(' in ') !== -1) return;
