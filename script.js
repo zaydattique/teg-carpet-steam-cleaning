@@ -1,4 +1,4 @@
-// Load CMS config applicator (panel uploads / SEO / NAP / logo override HTML defaults when set)
+// Load CMS config applicator
 (function loadSiteConfig() {
   if (window.TEG_SITE) return;
   var s = document.createElement('script');
@@ -7,22 +7,27 @@
   document.head.appendChild(s);
 })();
 
-// Hero video: no poster — dark bg until ready, then fade in + play
+// Analytics tracker (Call Now, GMB, CTAs, page views)
+(function loadAnalytics() {
+  var s = document.createElement('script');
+  s.src = 'analytics-tracker.js';
+  s.async = true;
+  document.head.appendChild(s);
+})();
+
+// Hero video
 (function initHeroVideo() {
   var hv = document.getElementById('heroVideo') || document.querySelector('video.hero-video');
   if (!hv) return;
   hv.removeAttribute('poster');
-
   function markReady() {
     hv.classList.add('is-ready');
     if (hv.parentElement) hv.parentElement.classList.add('video-ready');
     var p = hv.play();
     if (p && typeof p.catch === 'function') p.catch(function () {});
   }
-
-  if (hv.readyState >= 2) {
-    markReady();
-  } else {
+  if (hv.readyState >= 2) markReady();
+  else {
     hv.addEventListener('loadeddata', markReady, { once: true });
     hv.addEventListener('canplay', markReady, { once: true });
     hv.addEventListener('playing', markReady, { once: true });
@@ -45,12 +50,9 @@ if (header) {
   window.addEventListener('scroll', function () {
     header.classList.toggle('scrolled', window.scrollY > 40);
   });
-  if (document.body.classList.contains('page-inner')) {
-    header.classList.add('scrolled');
-  }
+  if (document.body.classList.contains('page-inner')) header.classList.add('scrolled');
 }
 
-// Mobile menu — one close (hamburger becomes X)
 if (menuToggle && nav) {
   function setMenuState(open) {
     nav.classList.toggle('open', open);
@@ -58,17 +60,9 @@ if (menuToggle && nav) {
     menuToggle.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
     menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    menuToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    if (open) {
-      var first = nav.querySelector('a');
-      if (first) try { first.focus(); } catch (e) {}
-    }
   }
   function closeMenu() { setMenuState(false); }
   function openMenu() { setMenuState(true); }
-  nav.querySelectorAll('.nav-close').forEach(function (el) { el.remove(); });
-  menuToggle.setAttribute('aria-expanded', 'false');
-  menuToggle.setAttribute('aria-controls', 'nav');
   menuToggle.addEventListener('click', function (e) {
     e.stopPropagation();
     if (nav.classList.contains('open')) closeMenu();
@@ -78,9 +72,7 @@ if (menuToggle && nav) {
     link.addEventListener('click', function () { closeMenu(); });
   });
   document.addEventListener('click', function (e) {
-    if (nav.classList.contains('open') && !nav.contains(e.target) && !menuToggle.contains(e.target)) {
-      closeMenu();
-    }
+    if (nav.classList.contains('open') && !nav.contains(e.target) && !menuToggle.contains(e.target)) closeMenu();
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeMenu();
@@ -113,6 +105,7 @@ if (form) {
       });
       var data = await res.json().catch(function () { return {}; });
       if (res.ok && data.ok) {
+        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: true });
         btn.textContent = 'Request Received ✓';
         form.reset();
         setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3500);
@@ -136,20 +129,6 @@ var scrollObserver = new IntersectionObserver(function (entries) {
 }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
 document.querySelectorAll('.anim-on-scroll').forEach(function (el) { scrollObserver.observe(el); });
 
-document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
-  anchor.addEventListener('click', function (e) {
-    var id = this.getAttribute('href');
-    if (id.length > 1) {
-      var target = document.querySelector(id);
-      if (target) {
-        e.preventDefault();
-        var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }
-    }
-  });
-});
-
 function startPhoneShake() {
   var phones = document.querySelectorAll('.phone-link, .phone-shake');
   if (!phones.length) return;
@@ -164,43 +143,31 @@ startPhoneShake();
 
 (function ensureSmsFloat() {
   function run() {
-    document.querySelectorAll('a.whatsapp-float, a[href*="wa.me"]').forEach(function (el) {
-      if (el.closest && el.closest('.contact-item')) return;
-      if (el.classList && el.classList.contains('whatsapp-float')) el.remove();
-    });
+    document.querySelectorAll('a.whatsapp-float').forEach(function (el) { el.remove(); });
     var existing = document.querySelector('a.sms-float');
     var html = '<svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h10v2H7V9zm0-3h10v2H7V6zm0 6h7v2H7v-2z"/></svg>';
     if (!existing) {
       var a = document.createElement('a');
       a.href = 'sms:+14147753705';
       a.className = 'sms-float';
-      a.setAttribute('rel', 'noopener');
       a.setAttribute('aria-label', 'Text us');
       a.innerHTML = html;
       document.body.appendChild(a);
     } else {
       existing.href = 'sms:+14147753705';
       existing.className = 'sms-float';
-      existing.setAttribute('aria-label', 'Text us');
-      existing.removeAttribute('target');
-      if (!existing.querySelector('svg')) existing.innerHTML = html;
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 })();
 
-/* Highlight current page in nav */
 (function markActiveNav() {
   try {
     var path = (location.pathname || '/').split('/').pop() || 'index.html';
-    if (!path) path = 'index.html';
     document.querySelectorAll('.nav a[href]').forEach(function (a) {
       var href = (a.getAttribute('href') || '').split('/').pop();
-      if (!href) return;
-      if (href === path || (path === 'index.html' && (href === 'index.html' || href === ''))) {
-        a.classList.add('active');
-      }
+      if (href === path || (path === 'index.html' && (href === 'index.html' || href === ''))) a.classList.add('active');
     });
   } catch (e) {}
 })();
