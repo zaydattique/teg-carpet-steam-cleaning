@@ -5,6 +5,14 @@
 (function () {
   var AEO_ENABLED = true;
 
+  // Google Search Console verification (all pages)
+  if (!document.querySelector('meta[name="google-site-verification"]')) {
+    var gv = document.createElement('meta');
+    gv.setAttribute('name', 'google-site-verification');
+    gv.setAttribute('content', 'O74SPC3MeJdRX26ydxXIWdr2OF2C8dgGeWqJ4xRKJGU');
+    (document.head || document.documentElement).appendChild(gv);
+  }
+
   var GMB = 'https://g.page/teg-carpet-steam-cleaning';
   var GMB_REVIEW = 'https://g.page/teg-carpet-steam-cleaning/review';
   var MAP_EMBED = 'https://www.google.com/maps?q=TEG+Carpet+%26+Furniture+Steam+Cleaning,+4111+N+Port+Washington+Rd+suite+1,+Milwaukee,+WI+53217&hl=en&z=16&output=embed';
