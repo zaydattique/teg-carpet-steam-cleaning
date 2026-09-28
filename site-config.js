@@ -87,7 +87,7 @@
         '@id': 'https://tegcarpetfurniturecleaning.com/#business',
         'name': 'T.E.G Carpet & Furniture Steam Cleaning',
         'alternateName': ['TEG Carpet Steam Cleaning', 'T.E.G Carpet Steam Cleaning'],
-        'description': 'Professional carpet cleaning, steam cleaning, tile and grout, upholstery, pet odor and stain removal, and commercial carpet cleaning in Milwaukee, WI and western suburbs. Upfront pricing, kid and pet safe, licensed and insured, available 24/7.',
+        'description': 'Professional carpet cleaning, steam cleaning, tile and grout, upholstery, area rugs, pet odor and stain removal, commercial carpet cleaning, water damage restoration, carpet stretching, and hardwood floor cleaning in Milwaukee, WI and western suburbs. Upfront pricing, kid and pet safe, licensed and insured, available 24/7.',
         'url': 'https://tegcarpetfurniturecleaning.com/',
         'telephone': '+1-414-775-3705',
         'email': 'contact@teg-carpetsteamcleaning.com',
@@ -109,7 +109,7 @@
           'closes': '23:59'
         },
         'aggregateRating': { '@type': 'AggregateRating', 'ratingValue': '5.0', 'reviewCount': '32', 'bestRating': '5', 'worstRating': '1' },
-        'knowsAbout': ['carpet cleaning','steam cleaning','tile and grout cleaning','upholstery cleaning','pet odor removal','stain removal','commercial carpet cleaning','hot water extraction'],
+        'knowsAbout': ['carpet cleaning','steam cleaning','tile and grout cleaning','upholstery cleaning','area rug cleaning','pet odor removal','stain removal','commercial carpet cleaning','hot water extraction','water damage restoration','carpet stretching','hardwood floor cleaning'],
         'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI'],
         'sameAs': ['https://g.page/teg-carpet-steam-cleaning'],
         'hasOfferCatalog': {
@@ -119,9 +119,13 @@
             {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-carpet-cleaning.html'}},
             {'@type':'Offer','itemOffered':{'@type':'Service','name':'Tile and Grout Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-tile-grout.html'}},
             {'@type':'Offer','itemOffered':{'@type':'Service','name':'Upholstery Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-couch-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Steam Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-steam-cleaning.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Area Rug Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-area-rug.html'}},
             {'@type':'Offer','itemOffered':{'@type':'Service','name':'Pet Odor and Stain Removal','url':'https://tegcarpetfurniturecleaning.com/service-stain-removal.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Commercial Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-commercial.html'}}
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Steam Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-steam-cleaning.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Commercial Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-commercial.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Water Damage Restoration','url':'https://tegcarpetfurniturecleaning.com/service-water-damage.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Stretching and Repair','url':'https://tegcarpetfurniturecleaning.com/service-carpet-stretching.html'}},
+            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Hardwood Floor Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-hardwood.html'}}
           ]
         }
       }, {
@@ -208,6 +212,57 @@
     });
   }
 
+  function injectRelatedServices() {
+    var path = (location.pathname || '').split('/').pop() || '';
+    if (path.indexOf('service-') !== 0) return;
+    if (document.getElementById('teg-related-services')) return;
+    var all = [
+      {h:'service-carpet-cleaning.html',n:'Carpet Cleaning'},
+      {h:'service-tile-grout.html',n:'Tile & Grout'},
+      {h:'service-couch-cleaning.html',n:'Upholstery'},
+      {h:'service-area-rug.html',n:'Area Rugs'},
+      {h:'service-stain-removal.html',n:'Pet Odor & Stain'},
+      {h:'service-steam-cleaning.html',n:'Steam Cleaning'},
+      {h:'service-commercial.html',n:'Commercial'},
+      {h:'service-water-damage.html',n:'Water Damage'},
+      {h:'service-carpet-stretching.html',n:'Carpet Stretching'},
+      {h:'service-hardwood.html',n:'Hardwood Floors'}
+    ];
+    var links = all.filter(function(x){ return x.h !== path; }).slice(0,6).map(function(x){
+      return '<a href="'+x.h+'">'+x.n+'</a>';
+    }).join('');
+    var box = document.createElement('section');
+    box.id = 'teg-related-services';
+    box.className = 'svc-block';
+    box.innerHTML = '<div class="container"><p class="section-eyebrow">Related services</p><h2>Also available from the same team</h2><p>Book multiple services in one visit when it makes sense for your home.</p><div class="svc-areas-list">'+links+'<a href="services.html">All 10 services →</a></div></div>';
+    var cta = document.querySelector('section.cta-banner');
+    if (cta && cta.parentNode) cta.parentNode.insertBefore(box, cta);
+    else {
+      var main = document.querySelector('main');
+      if (main) main.appendChild(box);
+    }
+  }
+
+  function injectAnswerFacts() {
+    if (document.getElementById('teg-answer-facts')) return;
+    var path = (location.pathname || '').split('/').pop() || '';
+    if (path.indexOf('service-') !== 0) return;
+    var facts = [
+      'Price agreed before we start — no surprise fees',
+      'Open 24/7 for booking and emergencies',
+      'Kid- and pet-safe products (once dry)',
+      'Licensed & insured Milwaukee local team',
+      'Hot water extraction / professional steam methods for deep clean'
+    ];
+    var el = document.createElement('div');
+    el.id = 'teg-answer-facts';
+    el.setAttribute('style','background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:16px 18px;margin:20px auto;max-width:920px');
+    el.innerHTML = '<strong style="display:block;margin-bottom:8px;color:#0a3d6b">Quick facts</strong><ul style="margin:0;padding-left:18px;color:#334155;line-height:1.6">' +
+      facts.map(function(f){ return '<li>'+f+'</li>'; }).join('') + '</ul>';
+    var block = document.querySelector('.svc-block');
+    if (block && block.parentNode) block.parentNode.insertBefore(el, block);
+  }
+
   function forceUI() {
     document.querySelectorAll('a[href^="tel:"], a.phone-link, a.phone-shake').forEach(function (a) {
       if (a.closest && (a.closest('.sms-float') || a.closest('.whatsapp-float'))) return;
@@ -236,6 +291,8 @@
     injectGmbUi();
     injectFooterMap();
     injectContactMapBox();
+    injectRelatedServices();
+    injectAnswerFacts();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceUI);
