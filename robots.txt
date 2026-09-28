@@ -1,4 +1,4 @@
-# T.E.G Carpet & Furniture Steam Cleaning — SEO + AEO ON
+# T.E.G Carpet & Furniture Steam Cleaning — SEO + AEO
 User-agent: *
 Allow: /
 Disallow: /admin.html
