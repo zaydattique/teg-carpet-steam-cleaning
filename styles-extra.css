@@ -18,6 +18,68 @@
 .logo-mark { white-space: nowrap; }
 .logo-text { white-space: nowrap; }
 
+/* ===== HEADER: always white bg, dark text from start ===== */
+.header,
+.header.scrolled,
+.page-inner .header {
+  background: #ffffff !important;
+  box-shadow: 0 1px 0 rgba(14, 165, 233, 0.14) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Logo + nav + phone: dark from first paint (same as scrolled) */
+.header .logo-mark,
+.header.scrolled .logo-mark,
+.page-inner .logo-mark {
+  color: #0ea5e9 !important;
+}
+.header .logo-text,
+.header.scrolled .logo-text,
+.page-inner .logo-text {
+  color: #0a3d6b !important;
+}
+.header .nav a,
+.header.scrolled .nav a,
+.page-inner .nav a {
+  color: #0f172a !important;
+}
+.header .nav a:hover,
+.header.scrolled .nav a:hover,
+.page-inner .nav a:hover {
+  color: #0ea5e9 !important;
+}
+.header .nav a::after,
+.header.scrolled .nav a::after {
+  background: #0ea5e9 !important;
+}
+.header .nav a.active,
+.page-inner .nav a.active {
+  color: #0ea5e9 !important;
+  font-weight: 600 !important;
+}
+.header .phone-link,
+.header.scrolled .phone-link,
+.page-inner .phone-link {
+  color: #0a3d6b !important;
+  border-color: #0ea5e9 !important;
+}
+.header .phone-link:hover,
+.header.scrolled .phone-link:hover,
+.page-inner .phone-link:hover {
+  color: #0ea5e9 !important;
+  border-color: #0ea5e9 !important;
+  background: rgba(14, 165, 233, 0.08) !important;
+}
+.header .menu-toggle span,
+.header.scrolled .menu-toggle span,
+.page-inner .menu-toggle span {
+  background: #0a3d6b !important;
+}
+.header-actions {
+  border-left-color: rgba(14, 165, 233, 0.2) !important;
+}
+
 @media (min-width: 769px) {
   .header-inner { flex-wrap: nowrap !important; gap: 12px !important; min-width: 0 !important; }
   .header .nav {
@@ -35,18 +97,6 @@
   .header .logo { flex: 0 0 auto !important; max-width: min(240px, 30vw) !important; }
   .header .logo-text { font-size: clamp(11px, 1.1vw, 15px) !important; }
 }
-
-.page-inner .header {
-  background: #ffffff !important;
-  box-shadow: 0 1px 0 rgba(14, 165, 233, 0.15);
-  backdrop-filter: none;
-}
-.page-inner .logo-text { color: var(--navy) !important; }
-.page-inner .logo-mark { color: var(--sky-dark) !important; }
-.page-inner .nav a { color: var(--heading) !important; }
-.page-inner .nav a.active { color: var(--sky-dark) !important; font-weight: 600; }
-.page-inner .phone-link { color: var(--navy) !important; }
-.page-inner .menu-toggle span { background: var(--navy) !important; }
 
 .page-hero {
   padding: 140px 0 56px;
@@ -216,12 +266,12 @@ a.logo.has-logo-img .logo-text { display: none !important; }
   color: #7dd3fc !important;
 }
 
-/* Hero starts BELOW fixed navbar */
+/* Hero starts BELOW fixed navbar — compact, no giant empty gap */
 .hero {
   position: relative !important;
   margin-top: var(--header-h, 80px) !important;
-  min-height: calc(100vh - var(--header-h, 80px)) !important;
-  min-height: calc(100svh - var(--header-h, 80px)) !important;
+  min-height: 0 !important;
+  height: auto !important;
   max-height: none !important;
   padding-top: 0 !important;
   display: flex !important;
@@ -288,7 +338,7 @@ video.hero-video.is-ready { opacity: 1 !important; }
 .hero .hero-content {
   position: relative !important;
   z-index: 3 !important;
-  padding: 28px 24px 48px !important;
+  padding: 40px 24px 48px !important;
 }
 .hero .hero-title-white,
 .hero .hero-title { text-shadow: 0 2px 18px rgba(0,0,0,0.4); }
@@ -299,14 +349,6 @@ video.hero-video.is-ready { opacity: 1 !important; }
 .svc-hero,
 .inner-hero {
   padding-top: calc(var(--header-h, 80px) + 48px) !important;
-}
-
-.nav a.active {
-  color: var(--sky-dark, #0ea5e9) !important;
-  font-weight: 600 !important;
-}
-.page-inner .nav a.active {
-  color: var(--sky-dark, #0ea5e9) !important;
 }
 
 .sms-float {
@@ -358,7 +400,6 @@ body.menu-open .whatsapp-float {
     max-width: 100vw !important;
   }
 
-  /* Solid white header on every page */
   .header,
   .header.scrolled,
   .page-inner .header {
@@ -423,6 +464,7 @@ body.menu-open .whatsapp-float {
     padding: 14px 4px !important;
     border-bottom: 1px solid #f1f5f9 !important;
   }
+  .nav a:hover { color: #0ea5e9 !important; }
   .nav a.active {
     color: #0ea5e9 !important;
     font-weight: 600 !important;
@@ -458,14 +500,15 @@ body.menu-open .whatsapp-float {
     height: 100% !important;
   }
 
+  /* MOBILE HERO: no full-viewport height, no giant gap under header */
   .hero {
     margin-top: var(--header-h) !important;
-    min-height: calc(100vh - var(--header-h)) !important;
-    min-height: calc(100svh - var(--header-h)) !important;
-    align-items: flex-end !important;
+    min-height: 0 !important;
+    height: auto !important;
+    align-items: flex-start !important;
   }
   .hero .hero-content {
-    padding: 16px 16px 28px !important;
+    padding: 28px 16px 36px !important;
     max-width: 100% !important;
   }
   .hero .hero-title { font-size: clamp(26px, 7.5vw, 34px) !important; }
