@@ -7,11 +7,20 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+let nodemailer = null;
+try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer not installed — email notifications disabled until npm install'); }
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || 'teg2026';
+/** Email address that receives every Get-an-Estimate lead (business owner — not the customer). */
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@teg-carpetsteamcleaning.com';
+const SMTP_HOST = process.env.SMTP_HOST || '';
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || NOTIFY_EMAIL;
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
@@ -87,14 +96,89 @@ const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 }, fileFil
 app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'T.E.G Backend', time: new Date().toISOString() }));
 app.get('/api/content', (_req, res) => res.json(getContent()));
 
-app.post('/api/contact', (req, res) => {
+async function sendOwnerNotification(entry) {
+  if (!nodemailer) return { sent: false, reason: 'nodemailer not installed' };
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    return { sent: false, reason: 'SMTP not configured (set SMTP_HOST, SMTP_USER, SMTP_PASS)' };
+  }
+  const transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS }
+  });
+  const subject = 'New estimate request — T.E.G Carpet Cleaning' + (entry.service ? ' (' + entry.service + ')' : '');
+  const text = [
+    'New quote / estimate request from the website.',
+    '',
+    'Name: ' + entry.name,
+    'Phone: ' + entry.phone,
+    'Email: ' + entry.email,
+    'Service: ' + (entry.service || '(not specified)'),
+    'Submitted: ' + entry.createdAt,
+    '',
+    'Details:',
+    entry.message || '(none)',
+    '',
+    '—',
+    'This message was sent to the business owner only. Reply to the customer at: ' + entry.email
+  ].join('\n');
+  const html = [
+    '<p><strong>New quote / estimate request</strong> from tegcarpetfurniturecleaning.com</p>',
+    '<table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">',
+    '<tr><td style="padding:4px 12px 4px 0"><strong>Name</strong></td><td>' + entry.name + '</td></tr>',
+    '<tr><td style="padding:4px 12px 4px 0"><strong>Phone</strong></td><td><a href="tel:' + entry.phone.replace(/[^0-9+]/g, '') + '">' + entry.phone + '</a></td></tr>',
+    '<tr><td style="padding:4px 12px 4px 0"><strong>Email</strong></td><td><a href="mailto:' + entry.email + '">' + entry.email + '</a></td></tr>',
+    '<tr><td style="padding:4px 12px 4px 0"><strong>Service</strong></td><td>' + (entry.service || '(not specified)') + '</td></tr>',
+    '<tr><td style="padding:4px 12px 4px 0"><strong>Submitted</strong></td><td>' + entry.createdAt + '</td></tr>',
+    '</table>',
+    '<p><strong>Details</strong><br>' + (entry.message ? String(entry.message).replace(/</g, '<').replace(/\n/g, '<br>') : '(none)') + '</p>',
+    '<p style="color:#666;font-size:12px">Reply to the customer at <a href="mailto:' + entry.email + '">' + entry.email + '</a>. This notification went to the business owner only.</p>'
+  ].join('');
+  await transporter.sendMail({
+    from: SMTP_FROM,
+    to: NOTIFY_EMAIL,
+    replyTo: entry.email,
+    subject,
+    text,
+    html
+  });
+  return { sent: true, to: NOTIFY_EMAIL };
+}
+
+app.post('/api/contact', async (req, res) => {
   const { name, phone, email, service, message } = req.body || {};
   if (!name || !phone || !email) return res.status(400).json({ ok: false, error: 'Name, phone and email are required.' });
-  const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name: String(name).trim(), phone: String(phone).trim(), email: String(email).trim(), service: String(service || '').trim(), message: String(message || '').trim(), createdAt: new Date().toISOString(), read: false };
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    name: String(name).trim(),
+    phone: String(phone).trim(),
+    email: String(email).trim(),
+    service: String(service || '').trim(),
+    message: String(message || '').trim(),
+    createdAt: new Date().toISOString(),
+    read: false
+  };
   const list = readJSON(SUBMISSIONS_FILE, []);
   list.unshift(entry);
   writeJSON(SUBMISSIONS_FILE, list);
-  res.json({ ok: true, message: 'Quote request received.', id: entry.id });
+
+  let emailResult = { sent: false };
+  try {
+    emailResult = await sendOwnerNotification(entry);
+    if (emailResult.sent) console.log('Owner notify email sent to', emailResult.to, 'for lead', entry.id);
+    else console.warn('Owner notify email skipped:', emailResult.reason);
+  } catch (err) {
+    console.error('Owner notify email failed:', err.message);
+    emailResult = { sent: false, reason: err.message };
+  }
+
+  res.json({
+    ok: true,
+    message: 'Quote request received.',
+    id: entry.id,
+    emailed: !!emailResult.sent
+  });
 });
 
 app.post('/api/analytics/event', (req, res) => {
@@ -202,4 +286,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: use ADMIN_PASSWORD environment variable');
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS));
 });
