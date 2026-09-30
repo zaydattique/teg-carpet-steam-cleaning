@@ -13,7 +13,11 @@ try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || 'teg2026';
+const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || '').trim();
+if (!ADMIN_PASSWORD) {
+  console.error('FATAL: ADMIN_PASSWORD (or legacy TEG_ADMIN_PASS) environment variable is required. Refusing to start with no admin secret.');
+  process.exit(1);
+}
 /** Email address that receives every Get-an-Estimate lead (business owner — not the customer). */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@teg-carpetsteamcleaning.com';
 const SMTP_HOST = process.env.SMTP_HOST || '';
@@ -132,7 +136,7 @@ async function sendOwnerNotification(entry) {
     '<tr><td style="padding:4px 12px 4px 0"><strong>Service</strong></td><td>' + (entry.service || '(not specified)') + '</td></tr>',
     '<tr><td style="padding:4px 12px 4px 0"><strong>Submitted</strong></td><td>' + entry.createdAt + '</td></tr>',
     '</table>',
-    '<p><strong>Details</strong><br>' + (entry.message ? String(entry.message).replace(/</g, '<').replace(/\n/g, '<br>') : '(none)') + '</p>',
+    '<p><strong>Details</strong><br>' + (entry.message ? String(entry.message).replace(/</g, \'<\').replace(/\n/g, '<br>') : '(none)') + '</p>',
     '<p style="color:#666;font-size:12px">Reply to the customer at <a href="mailto:' + entry.email + '">' + entry.email + '</a>. This notification went to the business owner only.</p>'
   ].join('');
   await transporter.sendMail({
@@ -285,6 +289,6 @@ app.use((req, res) => {
 
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
-  console.log('Admin auth: use ADMIN_PASSWORD environment variable');
+  console.log('Admin auth: configured (value not logged)');
   console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS));
 });
