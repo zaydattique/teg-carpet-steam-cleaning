@@ -16,11 +16,13 @@ npm start
 ```
 Open: **http://localhost:3000**
 
-Admin: **http://localhost:3000/admin.html**  
-Password: **teg2026** (or set `ADMIN_PASSWORD` env)
+Admin: **http://localhost:3000/admin.html**
+
+Set `ADMIN_PASSWORD` in the environment (no default exists). `TEG_ADMIN_PASS` is a legacy alternate.
 
 ```bash
-ADMIN_PASSWORD=yourpass PORT=3000 npm start
+export ADMIN_PASSWORD='your-strong-unique-secret'
+PORT=3000 npm start
 ```
 
 ## Deploy
