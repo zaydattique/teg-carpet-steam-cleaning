@@ -109,9 +109,11 @@
   function baHtml(pairs, serviceName) {
     return pairs.map(function (p) {
       var label = serviceName ? '<p class="ba-svc-name">' + esc(serviceName) + '</p>' : '';
+      var altB = (p.altBefore && String(p.altBefore).trim()) ? String(p.altBefore).trim() : ('Before ' + (serviceName || 'cleaning'));
+      var altA = (p.altAfter && String(p.altAfter).trim()) ? String(p.altAfter).trim() : ('After ' + (serviceName || 'cleaning'));
       return '<div class="ba-pair">' + label + '<div class="ba-imgs">' +
-        (p.before ? '<div class="ba-shot"><span class="ba-label">Before</span><img src="' + absUrl(p.before) + '" alt="Before ' + esc(serviceName) + '" loading="lazy" width="600" height="400"/></div>' : '') +
-        (p.after ? '<div class="ba-shot"><span class="ba-label">After</span><img src="' + absUrl(p.after) + '" alt="After ' + esc(serviceName) + '" loading="lazy" width="600" height="400"/></div>' : '') +
+        (p.before ? '<div class="ba-shot"><span class="ba-label">Before</span><img src="' + absUrl(p.before) + '" alt="' + esc(altB) + '" loading="lazy" width="600" height="400"/></div>' : '') +
+        (p.after ? '<div class="ba-shot"><span class="ba-label">After</span><img src="' + absUrl(p.after) + '" alt="' + esc(altA) + '" loading="lazy" width="600" height="400"/></div>' : '') +
         '</div>' + (p.caption ? '<p class="ba-caption">' + esc(p.caption) + '</p>' : '') + '</div>';
     }).join('');
   }
