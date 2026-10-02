@@ -134,9 +134,14 @@ function logout() {
 async function load() {
   let data = null;
   if (serverMode) {
-    try { data = await TEG.loadContentServer(); } catch (e) { showToast('Could not load from server', false); }
-  }
-  if (!data) {
+    try {
+      data = await TEG.loadContentServer();
+    } catch (e) {
+      document.getElementById('connStatus').textContent = 'Server unavailable — nothing loaded';
+      showToast('Could not load from server. Local data was not used.', false);
+      return;
+    }
+  } else {
     try { data = JSON.parse(localStorage.getItem('teg_content') || 'null'); } catch (e) {}
   }
   if (data) {
@@ -145,7 +150,7 @@ async function load() {
     showToast('Content loaded ✓', true);
   }
   document.getElementById('connStatus').textContent = serverMode
-    ? 'Connected — media preserved on save'
+    ? 'Connected — server content is authoritative'
     : 'Local only';
 }
 function fill(d) {
@@ -204,24 +209,34 @@ function collect() {
 }
 async function saveAll() {
   const data = collect();
-  localStorage.setItem('teg_content', JSON.stringify(data));
-  cache = data;
-  window._servicesCache = Array.isArray(data.services) ? JSON.parse(JSON.stringify(data.services)) : [];
+
   if (serverMode) {
     try {
       showProgress(60, 'Saving…');
-      await TEG.saveContentServer(data);
+      const result = await TEG.saveContentServer(data);
+      const saved = result && result.data ? result.data : null;
+      if (!saved) throw new Error('Server did not return verified content');
+
+      // Server is authoritative: only cache locally after the server confirms the write.
+      localStorage.setItem('teg_content', JSON.stringify(saved));
+      cache = saved;
+      window._servicesCache = Array.isArray(saved.services) ? JSON.parse(JSON.stringify(saved.services)) : [];
       hideProgress();
-      showToast('Saved to server ✓ — media kept', true);
+      showToast('Saved to server ✓ — verified', true);
       const status = document.getElementById('connStatus');
       if (status) status.textContent = 'Last saved: ' + new Date().toLocaleTimeString() + ' ✓';
       return true;
     } catch (e) {
       hideProgress();
-      showToast('Server save failed — saved locally only', false);
+      showToast('Server save failed — nothing was marked as saved', false);
       return false;
     }
   }
+
+  // Local-only mode is retained for development/offline use.
+  localStorage.setItem('teg_content', JSON.stringify(data));
+  cache = data;
+  window._servicesCache = Array.isArray(data.services) ? JSON.parse(JSON.stringify(data.services)) : [];
   showToast('Saved locally ✓', true);
   return true;
 }
