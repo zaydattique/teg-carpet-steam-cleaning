@@ -136,7 +136,9 @@ function bindEstimateForm(form) {
       feedback.textContent = 'Could not reach the server. Opening your email app as a backup…';
       var subject = encodeURIComponent('Quote Request - T.E.G Carpet Cleaning');
       var body = encodeURIComponent('Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email + '\nService: ' + service + '\n\nDetails:\n' + message);
-      window.location.href = 'mailto:contact@tegcarpetsteamcleaning.com?subject=' + subject + '&body=' + body;
+      var cmsEmail = (window.__TEG_BUSINESS && window.__TEG_BUSINESS.email) || (window.__TEG_CONTENT && window.__TEG_CONTENT.contact && window.__TEG_CONTENT.contact.email) || '';
+      if (cmsEmail) window.location.href = 'mailto:' + encodeURIComponent(cmsEmail) + '?subject=' + subject + '&body=' + body;
+      else feedback.textContent = 'Could not reach the server and no business email is configured.';
       btn.textContent = 'Opening email…';
       setTimeout(function () {
         btn.textContent = original;
@@ -180,13 +182,13 @@ startPhoneShake();
     var html = '<svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h10v2H7V9zm0-3h10v2H7V6zm0 6h7v2H7v-2z"/></svg>';
     if (!existing) {
       var a = document.createElement('a');
-      a.href = 'sms:+14147753705';
+      a.href = 'sms:' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.tel) || '');
       a.className = 'sms-float';
       a.setAttribute('aria-label', 'Text us');
       a.innerHTML = html;
       document.body.appendChild(a);
     } else {
-      existing.href = 'sms:+14147753705';
+      existing.href = 'sms:' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.tel) || '');
       existing.className = 'sms-float';
     }
   }
