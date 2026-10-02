@@ -248,8 +248,8 @@
   function abs(v) {
     if (!v) return '';
     v = String(v);
-    if (/^https?:\\/\\//i.test(v) || v.indexOf('//') === 0) return v;
-    return v.charAt(0) === '/' ? v : '/' + v.replace(/^\\.\\//, '');
+    if (/^https?:\/\//i.test(v) || v.indexOf('//') === 0) return v;
+    return v.charAt(0) === '/' ? v : '/' + v.replace(/^\.\//, '');
   }
   function text(el, value) { if (el && value != null) el.textContent = String(value); }
   function attr(el, name, value) { if (el && value != null && value !== '') el.setAttribute(name, String(value)); }
@@ -282,14 +282,14 @@
     var region = c.region || loc.region || '';
     var postal = c.postal || loc.postal || '';
     var gmb = loc.gmb || '';
-    var gmbReview = loc.gmbReview || (gmb ? gmb.replace(/\\/?$/, '') + '/review' : '');
+    var gmbReview = loc.gmbReview || (gmb ? gmb.replace(/\/?$/, '') + '/review' : '');
     window.__TEG_BUSINESS = { name:name, phone:phone, tel:tel, email:email, address:address, hours:hours, city:city, region:region, postal:postal, gmb:gmb, gmbReview:gmbReview };
 
     document.querySelectorAll('a[href^="tel:"]').forEach(function(a) {
-      if (tel) a.setAttribute('href', 'tel:' + tel.replace(/^tel:/i,'').replace(/\\s+/g,''));
+      if (tel) a.setAttribute('href', 'tel:' + tel.replace(/^tel:/i,'').replace(/\s+/g,''));
       if (phone) {
         var t = (a.textContent || '').trim();
-        if (!t || /call now|\\+?1?\\s*\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}/i.test(t)) text(a, phone);
+        if (!t || /call now|\+?1?\s*\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/i.test(t)) text(a, phone);
       }
     });
     document.querySelectorAll('a[href^="mailto:"]').forEach(function(a) {
