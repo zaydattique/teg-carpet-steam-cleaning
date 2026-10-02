@@ -247,6 +247,8 @@
         if (!t || /call now|\+?1?\s*\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/i.test(t)) text(a, phone);
       }
     });
+    document.querySelectorAll('[data-teg-sms]').forEach(function(a){ if (c.phoneTel) a.setAttribute('href', 'sms:' + c.phoneTel); });
+
     document.querySelectorAll('a[href^="mailto:"]').forEach(function(a) {
       if (email) { a.setAttribute('href', 'mailto:' + email); text(a, email); }
     });
