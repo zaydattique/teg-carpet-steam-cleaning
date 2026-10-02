@@ -32,7 +32,7 @@
     var box = document.createElement('div');
     box.id = 'teg-footer-map';
     box.className = 'teg-footer-map';
-    box.innerHTML = '<div class="teg-footer-map-inner"><div class="teg-footer-map-head"><h4>Find us on the map</h4><a href="' + MAP_LINK + '" target="_blank" rel="noopener">Open in Google Maps</a></div><iframe title="T.E.G location map" width="600" height="220" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="' + MAP_EMBED + '" allowfullscreen></iframe><div class="teg-footer-map-addr"><strong>T.E.G Carpet & Furniture Steam Cleaning</strong>4111 N Port Washington Rd suite 1<br>Milwaukee, WI 53217</div></div>';
+    box.innerHTML = '<div class="teg-footer-map-inner"><div class="teg-footer-map-head"><h4>Find us on the map</h4><a href="' + MAP_LINK + '" target="_blank" rel="noopener">Open in Google Maps</a></div><iframe title="Business location map" width="600" height="220" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="' + MAP_EMBED + '" allowfullscreen></iframe><div class="teg-footer-map-addr"><strong>' + (window.__TEG_BUSINESS.name || '') + '</strong>' + (window.__TEG_BUSINESS.address || '') + '</div></div>';
     var grid = footer.querySelector('.footer-grid');
     if (grid) footer.insertBefore(box, grid); else footer.appendChild(box);
   }
@@ -46,7 +46,7 @@
     box.id = 'teg-contact-map-box';
     box.className = 'teg-contact-map-box';
     var gbp = AEO_ENABLED ? '<a class="ghost" href="' + GMB + '" target="_blank" rel="noopener">Google Business Profile</a>' : '';
-    box.innerHTML = '<div class="teg-map-top"><div class="teg-map-info"><h2>Our location</h2><p>Milwaukee and western suburbs.</p><div class="teg-addr-line"><strong>Address</strong><br>4111 N Port Washington Rd suite 1<br>Milwaukee, WI 53217</div><div class="teg-addr-line"><strong>Phone</strong><br><a href="tel:+14147753705">Call Now</a></div><div class="teg-addr-line"><strong>Hours</strong><br>24/7 — Always Available</div><div class="teg-map-actions"><a class="primary" href="' + MAP_LINK + '" target="_blank" rel="noopener">Get directions</a>' + gbp + '</div></div><div class="teg-map-frame"><iframe title="Map" width="600" height="320" style="border:0" loading="lazy" src="' + MAP_EMBED + '" allowfullscreen></iframe></div></div>';
+    box.innerHTML = '<div class="teg-map-top"><div class="teg-map-info"><h2>Our location</h2><p>' + (window.__TEG_BUSINESS.city || '') + (window.__TEG_BUSINESS.region ? ', ' + window.__TEG_BUSINESS.region : '') + '</p><div class="teg-addr-line"><strong>Address</strong><br>' + (window.__TEG_BUSINESS.address || '') + '</div><div class="teg-addr-line"><strong>Phone</strong><br><a href="tel:' + (window.__TEG_BUSINESS.tel || '') + '">' + (window.__TEG_BUSINESS.phone || '') + '</a></div><div class="teg-addr-line"><strong>Hours</strong><br>' + (window.__TEG_BUSINESS.hours || '') + '</div><div class="teg-map-actions"><a class="primary" href="' + MAP_LINK + '" target="_blank" rel="noopener">Get directions</a>' + gbp + '</div></div><div class="teg-map-frame"><iframe title="Business location map" width="600" height="320" style="border:0" loading="lazy" src="' + MAP_EMBED + '" allowfullscreen></iframe></div></div>';
     section.appendChild(box);
   }
 
