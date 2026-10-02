@@ -275,10 +275,22 @@ app.post('/api/admin/login', (req, res) => {
 app.get('/api/admin/content', requireAdmin, (_req, res) => res.json({ ok: true, data: getContent() }));
 
 app.put('/api/admin/content', requireAdmin, (req, res) => {
-  const data = req.body;
-  if (!data || typeof data !== 'object') return res.status(400).json({ ok: false, error: 'Invalid content' });
-  writeJSON(CONTENT_FILE, data);
-  res.json({ ok: true, message: 'Content saved' });
+  const incoming = req.body;
+  if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
+    return res.status(400).json({ ok: false, error: 'Invalid content' });
+  }
+
+  // Never replace the stored CMS object with a partial/stale client payload.
+  // Merge against the current persistent copy first, then atomically write it.
+  const current = getContent();
+  const merged = deepMerge(current, incoming);
+  writeJSON(CONTENT_FILE, merged);
+
+  // Read back the exact persistent file before telling Admin that the save succeeded.
+  const saved = readJSON(CONTENT_FILE, null);
+  if (!saved) return res.status(500).json({ ok: false, error: 'Content could not be verified after save' });
+
+  res.json({ ok: true, message: 'Content saved and verified', data: saved });
 });
 
 app.get('/api/admin/submissions', requireAdmin, (_req, res) => res.json({ ok: true, data: readJSON(SUBMISSIONS_FILE, []) }));
