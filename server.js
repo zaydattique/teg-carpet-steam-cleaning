@@ -16,7 +16,7 @@ if (!ADMIN_PASSWORD) {
   process.exit(1);
 }
 /** Email address that receives every Get-an-Estimate lead (business owner - not the customer). */
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
+const NOTIFY_EMAIL_OVERRIDE = (process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || '').trim();
 // Runtime state must live outside the deploy/release directory so Hostinger redeploys cannot wipe CMS data or uploads.
 // Override these paths with environment variables when the hosting provider gives you a dedicated persistent volume.
 const PERSIST_ROOT = process.env.TEG_PERSIST_DIR || path.join(process.env.HOME || __dirname, '.teg-carpet-persistent');
@@ -80,12 +80,12 @@ if (!fs.existsSync(ANALYTICS_FILE)) writeJSON(ANALYTICS_FILE, { events: [] });
 if (!fs.existsSync(SUBMISSIONS_FILE)) writeJSON(SUBMISSIONS_FILE, []);
 
 const DEFAULT_CONTENT = {
-  branding: { siteName: 'T.E.G Carpet & Furniture Steam Cleaning', logoMark: 'T.E.G', logoText: 'Carpet & Furniture Steam Cleaning', logoUrl: '', faviconUrl: '' },
-  seo: { title: 'T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee', description: 'Professional carpet, couch, tile & steam cleaning services by T.E.G in Milwaukee, WI.', keywords: 'carpet cleaning Milwaukee, steam cleaning Milwaukee', canonical: 'https://tegcarpetfurniturecleaning.com/', ogTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', ogDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', ogImage: '', twitterTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', twitterDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', twitterImage: '' },
+  branding: { siteName: '', logoMark: '', logoText: '', logoUrl: '', faviconUrl: '' },
+  seo: { title: '', description: '', keywords: '', canonical: '', ogTitle: '', ogDescription: '', ogImage: '', twitterTitle: '', twitterDescription: '', twitterImage: '' },
   media: { heroImage: '', heroVideo: '', heroPoster: '', ogImage: '', aboutImage: '', logo: '', favicon: '' },
   pageMedia: {},
-  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (414) 775-3705', whatsappDigits: '14147753705', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 - Always Available' },
-  location: { name: 'T.E.G Carpet & Furniture Steam Cleaning', city: 'Milwaukee', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217, United States', region: 'WI', postal: '53217', lat: '43.0895', lng: '-87.8910', geoRegion: 'US-WI' },
+  contact: { phone: '', phoneTel: '', whatsapp: '', whatsappDigits: '', email: '', address: '', addressLine1: '', city: '', region: '', postal: '', hours: '' },
+  location: { name: '', city: '', address: '', region: '', postal: '', lat: '', lng: '', geoRegion: '', gmb: '', gmbReview: '' },
   nav: { main: [], footer: [], services: [] },
   services: [],
   pages: {}
@@ -129,6 +129,12 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'T.E.G Backe
 app.get('/api/content', (_req, res) => res.json(getContent()));
 
 async function sendOwnerNotification(entry) {
+  // The Admin CMS contact email is the source of truth for lead notifications.
+  // NOTIFY_EMAIL / TEG_NOTIFY_EMAIL remains only as an explicit deployment override.
+  const cmsEmail = String(((getContent().contact || {}).email) || '').trim();
+  const notifyEmail = NOTIFY_EMAIL_OVERRIDE || cmsEmail;
+  if (!notifyEmail) return { sent: false, reason: 'No owner notification email configured in Admin' };
+
   // Owner email via FormSubmit (no SMTP / nodemailer required)
   const subject = 'New estimate request - T.E.G Carpet Cleaning' + (entry.service ? ' (' + entry.service + ')' : '');
   const textBody = [
@@ -146,7 +152,7 @@ async function sendOwnerNotification(entry) {
     'Reply to the customer at: ' + entry.email
   ].join('\n');
 
-  const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
+  const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(notifyEmail), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
@@ -165,7 +171,7 @@ async function sendOwnerNotification(entry) {
     const errText = await res.text().catch(function () { return ''; });
     return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + String(errText).slice(0, 120) };
   }
-  return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit' };
+  return { sent: true, to: notifyEmail, via: 'formsubmit' };
 }
 
 app.post('/api/contact', async (req, res) => {
@@ -320,5 +326,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: configured (value not logged)');
-  console.log('Owner notify email:', NOTIFY_EMAIL, '| via FormSubmit (no SMTP)');
+  console.log('Owner notify email: configured via Admin CMS or explicit environment override | via FormSubmit (no SMTP)');
 });
