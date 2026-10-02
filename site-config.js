@@ -75,6 +75,15 @@
     (document.head || document.documentElement).appendChild(se);
   }
 
+  function injectFooterMap() {}
+  function injectContactMapBox() {}
+  function injectGmbUi() {}
+  function ensureReviewsNav() {}
+  function localizeAreaServiceTitles() {}
+  function injectRelatedServices() {}
+  function injectAnswerFacts() {}
+  function injectAreaDepth() {}
+
   function forceUI() {
     try {
       document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp"]').forEach(function (a) {
@@ -83,8 +92,20 @@
     } catch (e) {}
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceUI);
-  else forceUI();
+  function runAll() {
+    injectFooterMap();
+    injectContactMapBox();
+    injectGmbUi();
+    ensureReviewsNav();
+    localizeAreaServiceTitles();
+    injectRelatedServices();
+    injectAnswerFacts();
+    injectAreaDepth();
+    forceUI();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runAll);
+  else runAll();
 
   window.TEG_SITE = { forceUI: forceUI, AEO_ENABLED: AEO_ENABLED };
 })();
