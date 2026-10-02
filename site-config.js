@@ -270,7 +270,13 @@
       document.querySelectorAll('[data-teg-gmb-review]').forEach(function(el){ attr(el, 'href', gmbReview); });
     }
 
-    if (s.title) document.title = s.title;
+    var pageKey = (location.pathname.split('/').pop() || 'index.html');
+    var pageSeo = (data.pages && data.pages[pageKey]) || {};
+    if (pageSeo.title || s.title) document.title = pageSeo.title || s.title;
+    setMeta('description', pageSeo.description || s.description);
+    setMeta('keywords', pageSeo.keywords || s.keywords);
+    var canonical = pageSeo.canonical || s.canonical;
+    if (canonical) { var cl = document.querySelector('link[rel="canonical"]'); if (!cl) { cl=document.createElement('link'); cl.rel='canonical'; document.head.appendChild(cl); } cl.href=canonical; }
     try { forceUI(); } catch (e) {}
     setMeta('description', s.description);
     setMeta('keywords', s.keywords);
