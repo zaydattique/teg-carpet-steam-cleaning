@@ -12,10 +12,10 @@
     (document.head || document.documentElement).appendChild(gv);
   }
 
-  var GMB = 'https://g.page/teg-carpet-steam-cleaning';
-  var GMB_REVIEW = 'https://g.page/teg-carpet-steam-cleaning/review';
-  var MAP_EMBED = 'https://www.google.com/maps?q=TEG+Carpet+%26+Furniture+Steam+Cleaning,+4111+N+Port+Washington+Rd+suite+1,+Milwaukee,+WI+53217&hl=en&z=16&output=embed';
-  var MAP_LINK = 'https://www.google.com/maps/search/?api=1&query=TEG+Carpet+%26+Furniture+Steam+Cleaning+4111+N+Port+Washington+Rd+Milwaukee+WI';
+  var GMB = '';
+  var GMB_REVIEW = '';
+  var MAP_EMBED = '';
+  var MAP_LINK = '';
 
   if (!document.getElementById('teg-ui-css')) {
     var st = document.createElement('style');
@@ -284,6 +284,10 @@
     var gmb = loc.gmb || '';
     var gmbReview = loc.gmbReview || (gmb ? gmb.replace(/\/?$/, '') + '/review' : '');
     window.__TEG_BUSINESS = { name:name, phone:phone, tel:tel, email:email, address:address, hours:hours, city:city, region:region, postal:postal, gmb:gmb, gmbReview:gmbReview };
+    GMB = gmb;
+    GMB_REVIEW = gmbReview;
+    MAP_LINK = loc.mapLink || (address ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(name + ' ' + address) : '');
+    MAP_EMBED = loc.mapEmbed || (address ? 'https://www.google.com/maps?q=' + encodeURIComponent(name + ' ' + address) + '&hl=en&z=16&output=embed' : '');
 
     document.querySelectorAll('a[href^="tel:"]').forEach(function(a) {
       if (tel) a.setAttribute('href', 'tel:' + tel.replace(/^tel:/i,'').replace(/\s+/g,''));
@@ -314,6 +318,7 @@
     }
 
     if (s.title) document.title = s.title;
+    try { forceUI(); } catch (e) {}
     setMeta('description', s.description);
     setMeta('keywords', s.keywords);
 
