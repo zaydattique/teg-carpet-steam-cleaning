@@ -1,59 +1,42 @@
-# T.E.G Carpet Steam Cleaning — Full Website + Backend
+# T.E.G Carpet & Furniture Steam Cleaning
 
-Premium multi-page site for **T.E.G Carpet & Furniture Steam Cleaning** (Milwaukee, WI) with a **Node.js backend**.
+Website and backend for T.E.G Carpet & Furniture Steam Cleaning (Milwaukee, WI).
 
-## Backend features
-- **POST /api/contact** — quote form saves to `data/submissions.json`
-- **GET/PUT /api/admin/content** — SEO, media, services, location, contact
-- **GET /api/admin/submissions** — view quote requests in admin
-- **POST /api/admin/upload** — real file upload to `/uploads`
-- Serves all static HTML/CSS/JS
+**Live site:** [tegcarpetfurniturecleaning.com](https://tegcarpetfurniturecleaning.com)
 
-## Run locally
+## Stack
+
+- Static HTML/CSS/JS site
+- Express backend (`server.js`) for contact form, CMS content API, media uploads, analytics
+- Admin panel at `/admin.html`
+
+## Contact
+
+- Phone: +1 (414) 775-3705
+- Email: contact@tegcarpetsteamcleaning.com
+- Address: 4111 N Port Washington Rd suite 1, Milwaukee, WI 53217
+
+## Local development
+
 ```bash
 npm install
-npm start
-```
-Open: **http://localhost:3000**
-
-Admin: **http://localhost:3000/admin.html**
-
-Set `ADMIN_PASSWORD` in the environment (no default exists). `TEG_ADMIN_PASS` is a legacy alternate.
-
-```bash
-export ADMIN_PASSWORD='your-strong-unique-secret'
-PORT=3000 npm start
+export ADMIN_PASSWORD=your-secret
+# Optional: SMTP for lead emails
+# export SMTP_HOST=... SMTP_USER=... SMTP_PASS=... NOTIFY_EMAIL=contact@tegcarpetsteamcleaning.com
+node server.js
 ```
 
-## Deploy
-1. Upload project to a VPS / Railway / Render / any Node host
-2. `npm install && npm start`
-3. Point domain to the server port (or reverse proxy with Nginx)
+Open http://localhost:3000
 
-**Important:** Backend must be running for form save + admin server save. Without server, form falls back to mailto.
+## Environment variables
 
-## Pages
-| File | Description |
-|------|-------------|
-| `index.html` | Homepage |
-| `services.html` | All services |
-| `service-*.html` | Individual service detail pages |
-| `about.html` / `contact.html` / `areas.html` | Inner pages |
-| `admin.html` | Admin panel |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ADMIN_PASSWORD` | Yes | Admin panel password |
+| `NOTIFY_EMAIL` | No | Owner email for form leads (default: contact@tegcarpetsteamcleaning.com) |
+| `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | No | Enable outbound email for leads |
+| `PORT` | No | Default 3000 |
 
-## API summary
-| Method | Path | Auth |
-|--------|------|------|
-| GET | `/api/health` | — |
-| GET | `/api/content` | — |
-| POST | `/api/contact` | — |
-| POST | `/api/admin/login` | password body |
-| GET/PUT | `/api/admin/content` | header `x-admin-key` |
-| GET | `/api/admin/submissions` | header `x-admin-key` |
-| POST | `/api/admin/upload` | header `x-admin-key` + multipart file |
+## Forms
 
-## Business
-- Phone: +1 (414) 775-3705
-- WhatsApp: +1 (618) 434-0858
-- Email: contact@teg-carpetsteamcleaning.com
-- Address: 4111 N Port Washington Rd suite 1, Milwaukee, WI 53217
+Estimate forms (`#quoteForm`, `#homeContactForm`) POST to `/api/contact`. Leads are stored in `data/submissions.json` and emailed to `NOTIFY_EMAIL` when SMTP is configured.
