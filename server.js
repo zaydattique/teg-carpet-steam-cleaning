@@ -25,6 +25,17 @@ const UPLOADS_DIR = process.env.TEG_UPLOADS_DIR || path.join(PERSIST_ROOT, 'uplo
 const SEED_DATA_DIR = path.join(__dirname, 'data');
 const SEED_UPLOADS_DIR = path.join(__dirname, 'uploads');
 
+// CMS content must never live inside the deploy directory. A redeploy can replace that directory.
+// Fail fast if deployment configuration accidentally points the CMS data back into the release.
+const deployDir = path.resolve(__dirname);
+const contentDir = path.resolve(DATA_DIR);
+const contentRel = path.relative(deployDir, contentDir);
+if (contentRel === '' || (!contentRel.startsWith('..' + path.sep) && contentRel !== '..')) {
+  console.error('FATAL: CMS content directory is inside the deploy directory:', contentDir);
+  console.error('Set TEG_PERSIST_DIR or TEG_DATA_DIR to a persistent path outside the app/release directory.');
+  process.exit(1);
+}
+
 [DATA_DIR, UPLOADS_DIR].forEach((dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
