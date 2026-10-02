@@ -24,56 +24,7 @@
     (document.head || document.documentElement).appendChild(st);
   }
 
-  if (!document.getElementById('teg-schema-ld')) {
-    var schema = {
-      '@context': 'https://schema.org',
-      '@graph': [{
-        '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
-        '@id': 'https://tegcarpetfurniturecleaning.com/#business',
-        'name': 'T.E.G Carpet & Furniture Steam Cleaning',
-        'alternateName': ['TEG Carpet Steam Cleaning', 'T.E.G Carpet Steam Cleaning'],
-        'description': 'Professional carpet cleaning, steam cleaning, tile and grout, upholstery, area rugs, pet odor and stain removal, commercial carpet cleaning, water damage restoration, carpet stretching, and hardwood floor cleaning in Milwaukee, WI and western suburbs. Upfront pricing, kid and pet safe, licensed and insured, available 24/7.',
-        'url': 'https://tegcarpetfurniturecleaning.com/',
-        'telephone': '+1-414-775-3705',
-        'email': 'contact@teg-carpetsteamcleaning.com',
-        'image': 'https://tegcarpetfurniturecleaning.com/favicon.svg',
-        'priceRange': '$$',
-        'address': { '@type': 'PostalAddress', 'streetAddress': '4111 N Port Washington Rd suite 1', 'addressLocality': 'Milwaukee', 'addressRegion': 'WI', 'postalCode': '53217', 'addressCountry': 'US' },
-        'geo': { '@type': 'GeoCoordinates', 'latitude': 43.0895, 'longitude': -87.8910 },
-        'openingHoursSpecification': { '@type': 'OpeningHoursSpecification', 'dayOfWeek': ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], 'opens': '00:00', 'closes': '23:59' },
-        'knowsAbout': ['carpet cleaning','steam cleaning','tile and grout cleaning','upholstery cleaning','area rug cleaning','pet odor removal','stain removal','commercial carpet cleaning','hot water extraction','water damage restoration','carpet stretching','hardwood floor cleaning'],
-        'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI'],
-        'sameAs': ['https://g.page/teg-carpet-steam-cleaning'],
-        'hasOfferCatalog': {
-          '@type': 'OfferCatalog',
-          'name': 'Cleaning services',
-          'itemListElement': [
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-carpet-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Tile and Grout Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-tile-grout.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Upholstery Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-couch-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Area Rug Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-area-rug.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Pet Odor and Stain Removal','url':'https://tegcarpetfurniturecleaning.com/service-stain-removal.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Steam Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-steam-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Commercial Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-commercial.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Water Damage Restoration','url':'https://tegcarpetfurniturecleaning.com/service-water-damage.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Stretching and Repair','url':'https://tegcarpetfurniturecleaning.com/service-carpet-stretching.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Hardwood Floor Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-hardwood.html'}}
-          ]
-        }
-      }, {
-        '@type': 'WebSite',
-        '@id': 'https://tegcarpetfurniturecleaning.com/#website',
-        'url': 'https://tegcarpetfurniturecleaning.com/',
-        'name': 'T.E.G Carpet & Furniture Steam Cleaning',
-        'publisher': { '@id': 'https://tegcarpetfurniturecleaning.com/#business' }
-      }]
-    };
-    var s = document.createElement('script');
-    s.type = 'application/ld+json';
-    s.id = 'teg-schema-ld';
-    s.textContent = JSON.stringify(schema);
-    (document.head || document.documentElement).appendChild(s);
-  }
+  // LocalBusiness schema is generated after admin content loads.
 
   function injectFooterMap() {
     var footer = document.querySelector('footer.footer .container');
