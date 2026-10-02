@@ -115,7 +115,8 @@
     if (document.getElementById('teg-answer-facts')) return;
     var path = (location.pathname || '').split('/').pop() || '';
     if (path.indexOf('service-') !== 0) return;
-    var facts = ['Price agreed before we start — no surprise fees','Open ' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.hours) || '24/7') + ' for booking and emergencies','Kid- and pet-safe products (once dry)','Licensed & insured ' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.city) || 'local') + ' team','Hot water extraction / professional steam methods for deep clean'];
+    var biz = window.__TEG_BUSINESS || {};
+    var facts = ['Price agreed before we start — no surprise fees','Open ' + (biz.hours || 'for booking') + ' for booking and emergencies','Kid- and pet-safe products (once dry)','Licensed & insured ' + (biz.city || 'local') + ' team','Hot water extraction / professional steam methods for deep clean'];
     var el = document.createElement('div');
     el.id = 'teg-answer-facts';
     el.setAttribute('style','background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:16px 18px;margin:20px auto;max-width:920px');
@@ -136,7 +137,12 @@
     var box = document.createElement('section');
     box.id = 'teg-area-depth';
     box.className = 'section';
-    box.innerHTML = '<div class="container" style="max-width:800px"><p class="section-eyebrow">Local guide</p><h2 class="section-title">Carpet cleaning in '+city+': what to expect</h2><p>T.E.G serves '+city+' on our regular Milwaukee-metro route with upfront pricing, hot water extraction for carpet, and the same crew for tile, upholstery, rugs, pet odor, commercial, water extraction, stretching, and hardwood when you need them.</p><p>Call <a href="tel:+14147753705">+1 (414) 775-3705</a> 24/7 or <a href="contact.html">request an estimate</a>. Price is agreed before we start. Most carpet dries in about 4–8 hours. Kid- and pet-safe products are standard once dry.</p><p>See the full process on <a href="how-it-works.html">how it works</a> and answers on the <a href="faq.html">FAQ</a>.</p><div class="home-areas-chips" style="margin-top:18px">'+chips+'</div></div>';
+    var biz = window.__TEG_BUSINESS || {};
+    var bizName = biz.name || 'Our team';
+    var bizPhone = biz.phone || '';
+    var bizTel = biz.tel || '';
+    var bizHours = biz.hours || '';
+    box.innerHTML = '<div class="container" style="max-width:800px"><p class="section-eyebrow">Local guide</p><h2 class="section-title">Carpet cleaning in '+city+': what to expect</h2><p>'+bizName+' serves '+city+' on our regular local route with upfront pricing, hot water extraction for carpet, and the same crew for tile, upholstery, rugs, pet odor, commercial, water extraction, stretching, and hardwood when you need them.</p><p>Call <a href="tel:'+bizTel+'">'+bizPhone+'</a> '+bizHours+' or <a href="contact.html">request an estimate</a>. Price is agreed before we start. Most carpet dries in about 4–8 hours. Kid- and pet-safe products are standard once dry.</p><p>See the full process on <a href="how-it-works.html">how it works</a> and answers on the <a href="faq.html">FAQ</a>.</p><div class="home-areas-chips" style="margin-top:18px">'+chips+'</div></div>';
     var cta = document.querySelector('section.cta-banner');
     if (cta && cta.parentNode) cta.parentNode.insertBefore(box, cta);
     else { var main = document.querySelector('main') || document.body; main.appendChild(box); }
@@ -160,10 +166,10 @@
     });
     document.querySelectorAll('.stat').forEach(function (el) {
       var s = el.querySelector('strong');
-      if (s && /Mon/i.test(s.textContent || '')) { s.textContent = '24/7'; var sp = el.querySelector('span'); if (sp) sp.textContent = 'Always open'; }
+      if (s && /Mon/i.test(s.textContent || '')) { s.textContent = (window.__TEG_BUSINESS && window.__TEG_BUSINESS.hours) || ''; var sp = el.querySelector('span'); if (sp) sp.textContent = ''; }
     });
     document.querySelectorAll('.logo-text').forEach(function (el) {
-      if ((el.textContent || '').indexOf('Furniture') === -1) el.textContent = 'Carpet & Furniture Steam Cleaning';
+      if ((el.textContent || '').indexOf('Furniture') === -1 && window.__TEG_BUSINESS && window.__TEG_BUSINESS.name) el.textContent = window.__TEG_BUSINESS.name;
     });
     ensureReviewsNav();
     localizeAreaServiceTitles();
