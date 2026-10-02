@@ -17,16 +17,50 @@ if (!ADMIN_PASSWORD) {
 }
 /** Email address that receives every Get-an-Estimate lead (business owner - not the customer). */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
-const DATA_DIR = path.join(__dirname, 'data');
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+// Runtime state must live outside the deploy/release directory so Hostinger redeploys cannot wipe CMS data or uploads.
+// Override these paths with environment variables when the hosting provider gives you a dedicated persistent volume.
+const PERSIST_ROOT = process.env.TEG_PERSIST_DIR || path.join(process.env.HOME || __dirname, '.teg-carpet-persistent');
+const DATA_DIR = process.env.TEG_DATA_DIR || path.join(PERSIST_ROOT, 'data');
+const UPLOADS_DIR = process.env.TEG_UPLOADS_DIR || path.join(PERSIST_ROOT, 'uploads');
+const SEED_DATA_DIR = path.join(__dirname, 'data');
+const SEED_UPLOADS_DIR = path.join(__dirname, 'uploads');
 
 [DATA_DIR, UPLOADS_DIR].forEach((dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
+function seedPersistentFile(target, seed) {
+  if (fs.existsSync(target) || !fs.existsSync(seed)) return;
+  try {
+    fs.copyFileSync(seed, target);
+    console.log('Initialized persistent state from', seed, '->', target);
+  } catch (e) {
+    console.error('Could not initialize persistent file', target, e.message);
+  }
+}
+
+function seedPersistentUploads() {
+  if (!fs.existsSync(SEED_UPLOADS_DIR)) return;
+  try {
+    const entries = fs.readdirSync(SEED_UPLOADS_DIR, { withFileTypes: true });
+    entries.forEach((entry) => {
+      if (!entry.isFile() || entry.name === '.gitkeep') return;
+      const target = path.join(UPLOADS_DIR, entry.name);
+      if (!fs.existsSync(target)) fs.copyFileSync(path.join(SEED_UPLOADS_DIR, entry.name), target);
+    });
+  } catch (e) {
+    console.error('Could not initialize persistent uploads', e.message);
+  }
+}
+
 const CONTENT_FILE = path.join(DATA_DIR, 'content.json');
 const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
 const ANALYTICS_FILE = path.join(DATA_DIR, 'analytics.json');
+
+seedPersistentFile(CONTENT_FILE, path.join(SEED_DATA_DIR, 'content.json'));
+seedPersistentFile(SUBMISSIONS_FILE, path.join(SEED_DATA_DIR, 'submissions.json'));
+seedPersistentFile(ANALYTICS_FILE, path.join(SEED_DATA_DIR, 'analytics.json'));
+seedPersistentUploads();
 
 function readJSON(file, fallback) {
   try {
@@ -37,7 +71,9 @@ function readJSON(file, fallback) {
   return fallback;
 }
 function writeJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+  const tmp = file + '.tmp-' + process.pid;
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+  fs.renameSync(tmp, file);
 }
 
 if (!fs.existsSync(ANALYTICS_FILE)) writeJSON(ANALYTICS_FILE, { events: [] });
@@ -48,7 +84,7 @@ const DEFAULT_CONTENT = {
   seo: { title: 'T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee', description: 'Professional carpet, couch, tile & steam cleaning services by T.E.G in Milwaukee, WI.', keywords: 'carpet cleaning Milwaukee, steam cleaning Milwaukee', canonical: 'https://tegcarpetfurniturecleaning.com/', ogTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', ogDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', ogImage: '', twitterTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', twitterDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', twitterImage: '' },
   media: { heroImage: '', heroVideo: '', heroPoster: '', ogImage: '', aboutImage: '', logo: '', favicon: '' },
   pageMedia: {},
-  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 - Always Available' },
+  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (414) 775-3705', whatsappDigits: '14147753705', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 - Always Available' },
   location: { name: 'T.E.G Carpet & Furniture Steam Cleaning', city: 'Milwaukee', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217, United States', region: 'WI', postal: '53217', lat: '43.0895', lng: '-87.8910', geoRegion: 'US-WI' },
   nav: { main: [], footer: [], services: [] },
   services: [],
