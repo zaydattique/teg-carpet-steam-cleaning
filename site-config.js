@@ -115,7 +115,7 @@
     if (document.getElementById('teg-answer-facts')) return;
     var path = (location.pathname || '').split('/').pop() || '';
     if (path.indexOf('service-') !== 0) return;
-    var facts = ['Price agreed before we start — no surprise fees','Open 24/7 for booking and emergencies','Kid- and pet-safe products (once dry)','Licensed & insured Milwaukee local team','Hot water extraction / professional steam methods for deep clean'];
+    var facts = ['Price agreed before we start — no surprise fees','Open ' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.hours) || '24/7') + ' for booking and emergencies','Kid- and pet-safe products (once dry)','Licensed & insured ' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.city) || 'local') + ' team','Hot water extraction / professional steam methods for deep clean'];
     var el = document.createElement('div');
     el.id = 'teg-answer-facts';
     el.setAttribute('style','background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:16px 18px;margin:20px auto;max-width:920px');
@@ -145,9 +145,9 @@
   function forceUI() {
     document.querySelectorAll('a[href^="tel:"], a.phone-link, a.phone-shake').forEach(function (a) {
       if (a.closest && (a.closest('.sms-float') || a.closest('.whatsapp-float'))) return;
-      a.setAttribute('href', 'tel:+14147753705');
+      a.setAttribute('href', 'tel:' + ((window.__TEG_BUSINESS && window.__TEG_BUSINESS.tel) || ''));
       var t = (a.textContent || '').trim();
-      if (t.indexOf('414') !== -1 || t.indexOf('Call') === 0 || /^\+?[\d\s().-]{7,}$/.test(t) || t === 'Call Now') a.textContent = 'Call Now';
+      if (t.indexOf('Call') === 0 || /^\+?[\d\s().-]{7,}$/.test(t) || t === 'Call Now') a.textContent = 'Call Now';
       if (a.classList.contains('btn')) { a.classList.remove('btn-primary'); a.classList.add('phone-shake'); }
     });
     document.querySelectorAll('a.whatsapp-float').forEach(function (a) { a.remove(); });
