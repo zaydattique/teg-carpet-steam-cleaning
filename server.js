@@ -1,5 +1,5 @@
 /**
- * T.E.G Carpet Steam Cleaning — Backend
+ * T.E.G Carpet Steam Cleaning - Backend
  * Contact form, admin content API, media upload, static site, analytics
  */
 const express = require('express');
@@ -8,7 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 let nodemailer = null;
-try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer not installed — email notifications disabled until npm install'); }
+try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer not installed - email via FormSubmit until npm install nodemailer'); }
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,7 +18,7 @@ if (!ADMIN_PASSWORD) {
   console.error('FATAL: ADMIN_PASSWORD (or legacy TEG_ADMIN_PASS) environment variable is required. Refusing to start with no admin secret.');
   process.exit(1);
 }
-/** Email address that receives every Get-an-Estimate lead (business owner — not the customer). */
+/** Email address that receives every Get-an-Estimate lead (business owner - not the customer). */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
 const SMTP_HOST = process.env.SMTP_HOST || '';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
@@ -56,7 +56,7 @@ const DEFAULT_CONTENT = {
   seo: { title: 'T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee', description: 'Professional carpet, couch, tile & steam cleaning services by T.E.G in Milwaukee, WI.', keywords: 'carpet cleaning Milwaukee, steam cleaning Milwaukee', canonical: 'https://tegcarpetfurniturecleaning.com/', ogTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', ogDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', ogImage: '', twitterTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', twitterDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', twitterImage: '' },
   media: { heroImage: '', heroVideo: '', heroPoster: '', ogImage: '', aboutImage: '', logo: '', favicon: '' },
   pageMedia: {},
-  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 — Always Available' },
+  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 - Always Available' },
   location: { name: 'T.E.G Carpet & Furniture Steam Cleaning', city: 'Milwaukee', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217, United States', region: 'WI', postal: '53217', lat: '43.0895', lng: '-87.8910', geoRegion: 'US-WI' },
   nav: { main: [], footer: [], services: [] },
   services: [],
@@ -101,18 +101,8 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'T.E.G Backe
 app.get('/api/content', (_req, res) => res.json(getContent()));
 
 async function sendOwnerNotification(entry) {
-  if (!nodemailer) return { sent: false, reason: 'nodemailer not installed' };
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    return { sent: false, reason: 'SMTP not configured (set SMTP_HOST, SMTP_USER, SMTP_PASS)' };
-  }
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_PORT === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS }
-  });
-  const subject = 'New estimate request — T.E.G Carpet Cleaning' + (entry.service ? ' (' + entry.service + ')' : '');
-  const text = [
+  const subject = 'New estimate request - T.E.G Carpet Cleaning' + (entry.service ? ' (' + entry.service + ')' : '');
+  const textBody = [
     'New quote / estimate request from the website.',
     '',
     'Name: ' + entry.name,
@@ -124,10 +114,9 @@ async function sendOwnerNotification(entry) {
     'Details:',
     entry.message || '(none)',
     '',
-    '—',
     'This message was sent to the business owner only. Reply to the customer at: ' + entry.email
   ].join('\n');
-  const html = [
+  const htmlBody = [
     '<p><strong>New quote / estimate request</strong> from tegcarpetfurniturecleaning.com</p>',
     '<table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">',
     '<tr><td style="padding:4px 12px 4px 0"><strong>Name</strong></td><td>' + entry.name + '</td></tr>',
@@ -136,18 +125,52 @@ async function sendOwnerNotification(entry) {
     '<tr><td style="padding:4px 12px 4px 0"><strong>Service</strong></td><td>' + (entry.service || '(not specified)') + '</td></tr>',
     '<tr><td style="padding:4px 12px 4px 0"><strong>Submitted</strong></td><td>' + entry.createdAt + '</td></tr>',
     '</table>',
-    '<p><strong>Details</strong><br>' + (entry.message ? String(entry.message).replace(/</g, '<').replace(/\n/g, '<br>') : '(none)') + '</p>',
-    '<p style="color:#666;font-size:12px">Reply to the customer at <a href="mailto:' + entry.email + '">' + entry.email + '</a>. This notification went to the business owner only.</p>'
+    '<p><strong>Details</strong><br>' + (entry.message ? String(entry.message).replace(/</g, '&lt;').replace(/\n/g, '<br>') : '(none)') + '</p>',
+    '<p style="color:#666;font-size:12px">Reply to the customer at <a href="mailto:' + entry.email + '">' + entry.email + '</a>.</p>'
   ].join('');
-  await transporter.sendMail({
-    from: SMTP_FROM,
-    to: NOTIFY_EMAIL,
-    replyTo: entry.email,
-    subject,
-    text,
-    html
-  });
-  return { sent: true, to: NOTIFY_EMAIL };
+
+  if (nodemailer && SMTP_HOST && SMTP_USER && SMTP_PASS) {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS }
+    });
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: NOTIFY_EMAIL,
+      replyTo: entry.email,
+      subject,
+      text: textBody,
+      html: htmlBody
+    });
+    return { sent: true, to: NOTIFY_EMAIL, via: 'smtp' };
+  }
+
+  // No SMTP setup required - delivers to owner inbox via FormSubmit
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        name: entry.name,
+        email: entry.email,
+        phone: entry.phone,
+        service: entry.service || '',
+        message: textBody,
+        _subject: subject,
+        _replyto: entry.email,
+        _template: 'table'
+      })
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(function () { return ''; });
+      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + errText.slice(0, 120) };
+    }
+    return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit' };
+  } catch (e) {
+    return { sent: false, reason: e.message || 'FormSubmit failed' };
+  }
 }
 
 app.post('/api/contact', async (req, res) => {
@@ -170,7 +193,7 @@ app.post('/api/contact', async (req, res) => {
   let emailResult = { sent: false };
   try {
     emailResult = await sendOwnerNotification(entry);
-    if (emailResult.sent) console.log('Owner notify email sent to', emailResult.to, 'for lead', entry.id);
+    if (emailResult.sent) console.log('Owner notify email sent to', emailResult.to, 'via', emailResult.via || 'email', 'for lead', entry.id);
     else console.warn('Owner notify email skipped:', emailResult.reason);
   } catch (err) {
     console.error('Owner notify email failed:', err.message);
@@ -290,5 +313,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: configured (value not logged)');
-  console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS));
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS), '| FormSubmit fallback: on');
 });
