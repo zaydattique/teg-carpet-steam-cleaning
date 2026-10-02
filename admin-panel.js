@@ -150,7 +150,7 @@ async function load() {
 }
 function fill(d) {
   const b = d.branding || {}, m = d.media || {}, c = d.contact || {}, s = d.seo || {}, loc = d.location || {};
-  set('brand-siteName', b.siteName); set('brand-logoMark', b.logoMark); set('brand-logoText', b.logoText);
+  set('brand-siteName', b.siteName); set('brand-name', b.siteName); set('brand-logoMark', b.logoMark); set('brand-logoText', b.logoText); set('brand-tagline', b.tagline || '');
   set('media-logo', m.logo || b.logoUrl || ''); set('media-favicon', m.favicon || b.faviconUrl || '');
   set('media-heroImage', m.heroImage || ''); set('media-heroVideo', m.heroVideo || '');
   set('media-heroPoster', m.heroPoster || ''); set('media-ogImage', m.ogImage || ''); set('media-aboutImage', m.aboutImage || '');
@@ -160,16 +160,16 @@ function fill(d) {
   set('pm-about', (pm['about.html'] || {}).heroImage || '');
   set('pm-faq', (pm['faq.html'] || {}).heroImage || '');
   set('pm-contact', (pm['contact.html'] || {}).heroImage || '');
-  set('contact-phone', c.phone); set('contact-phoneTel', c.phoneTel); set('contact-whatsapp', c.whatsapp);
-  set('contact-whatsappDigits', c.whatsappDigits); set('contact-email', c.email); set('contact-address', c.address);
-  set('contact-addressLine1', c.addressLine1); set('contact-city', c.city); set('contact-region', c.region);
-  set('contact-postal', c.postal); set('contact-hours', c.hours);
+  set('contact-phone', c.phone); set('contact-phoneTel', c.phoneTel); set('contact-whatsapp', c.whatsapp); set('contact-sms', c.sms || c.phone || '');
+  set('contact-whatsappDigits', c.whatsappDigits); set('contact-email', c.email); set('contact-address', c.address); set('contact-street', c.addressLine1 || c.street || '');
+  set('contact-addressLine1', c.addressLine1); set('contact-city', c.city); set('contact-region', c.region); set('contact-state', c.region || '');
+  set('contact-postal', c.postal); set('contact-zip', c.postal || ''); set('contact-hours', c.hours);
   set('seo-title', s.title); set('seo-description', s.description); set('seo-keywords', s.keywords);
   set('seo-canonical', s.canonical); set('seo-ogTitle', s.ogTitle); set('seo-ogDescription', s.ogDescription);
   set('seo-ogImage', s.ogImage || m.ogImage || ''); set('seo-twitterTitle', s.twitterTitle);
   set('seo-twitterDescription', s.twitterDescription); set('seo-twitterImage', s.twitterImage || m.ogImage || '');
   set('loc-name', loc.name); set('loc-address', loc.address); set('loc-city', loc.city); set('loc-region', loc.region);
-  set('loc-postal', loc.postal); set('loc-lat', loc.lat); set('loc-lng', loc.lng); set('loc-geoRegion', loc.geoRegion);
+  set('loc-postal', loc.postal); set('loc-lat', loc.lat); set('loc-lng', loc.lng); set('loc-geoRegion', loc.geoRegion); set('loc-gmb', loc.gmb); set('loc-gmbReview', loc.gmbReview);
   window._servicesCache = Array.isArray(d.services) ? JSON.parse(JSON.stringify(d.services)) : [];
   renderServices(d.services || []);
   renderNav('main', (d.nav || {}).main); renderNav('footer', (d.nav || {}).footer); renderNav('services', (d.nav || {}).services);
@@ -185,7 +185,7 @@ function collect() {
   const prevM = prev.media || {}, prevB = prev.branding || {}, prevSeo = prev.seo || {}, prevPm = prev.pageMedia || {};
   try { syncBaFromDom(); } catch (e) {}
   const data = prev;
-  data.branding = { siteName: keep('brand-siteName', prevB.siteName), logoMark: keep('brand-logoMark', prevB.logoMark), logoText: keep('brand-logoText', prevB.logoText), logoUrl: keep('media-logo', prevB.logoUrl || prevM.logo), faviconUrl: keep('media-favicon', prevB.faviconUrl || prevM.favicon) };
+  data.branding = { siteName: keep('brand-siteName', keep('brand-name', prevB.siteName)), tagline: keep('brand-tagline', prevB.tagline), logoMark: keep('brand-logoMark', prevB.logoMark), logoText: keep('brand-logoText', prevB.logoText), logoUrl: keep('media-logo', prevB.logoUrl || prevM.logo), faviconUrl: keep('media-favicon', prevB.faviconUrl || prevM.favicon) };
   data.media = { logo: keep('media-logo', prevM.logo), favicon: keep('media-favicon', prevM.favicon), heroImage: keep('media-heroImage', prevM.heroImage), heroVideo: keep('media-heroVideo', prevM.heroVideo), heroPoster: keep('media-heroPoster', prevM.heroPoster), ogImage: keep('media-ogImage', prevM.ogImage), aboutImage: keep('media-aboutImage', prevM.aboutImage) };
   data.pageMedia = Object.assign({}, prevPm, {
     'services.html': { heroImage: keep('pm-services', (prevPm['services.html'] || {}).heroImage) },
@@ -194,9 +194,9 @@ function collect() {
     'faq.html': { heroImage: keep('pm-faq', (prevPm['faq.html'] || {}).heroImage) },
     'contact.html': { heroImage: keep('pm-contact', (prevPm['contact.html'] || {}).heroImage) }
   });
-  data.contact = { phone: keep('contact-phone', (prev.contact || {}).phone), phoneTel: keep('contact-phoneTel', (prev.contact || {}).phoneTel), whatsapp: keep('contact-whatsapp', (prev.contact || {}).whatsapp), whatsappDigits: keep('contact-whatsappDigits', (prev.contact || {}).whatsappDigits), email: keep('contact-email', (prev.contact || {}).email), address: keep('contact-address', (prev.contact || {}).address), addressLine1: keep('contact-addressLine1', (prev.contact || {}).addressLine1), city: keep('contact-city', (prev.contact || {}).city), region: keep('contact-region', (prev.contact || {}).region), postal: keep('contact-postal', (prev.contact || {}).postal), hours: keep('contact-hours', (prev.contact || {}).hours) };
+  data.contact = { phone: keep('contact-phone', (prev.contact || {}).phone), phoneTel: keep('contact-phoneTel', (prev.contact || {}).phoneTel), whatsapp: keep('contact-whatsapp', (prev.contact || {}).whatsapp), whatsappDigits: keep('contact-whatsappDigits', (prev.contact || {}).whatsappDigits), email: keep('contact-email', (prev.contact || {}).email), address: keep('contact-address', (prev.contact || {}).address), addressLine1: keep('contact-addressLine1', keep('contact-street', (prev.contact || {}).addressLine1)), city: keep('contact-city', (prev.contact || {}).city), region: keep('contact-region', keep('contact-state', (prev.contact || {}).region)), postal: keep('contact-postal', keep('contact-zip', (prev.contact || {}).postal)), hours: keep('contact-hours', (prev.contact || {}).hours), sms: keep('contact-sms', (prev.contact || {}).sms || (prev.contact || {}).phone) };
   data.seo = { title: keep('seo-title', prevSeo.title), description: keep('seo-description', prevSeo.description), keywords: keep('seo-keywords', prevSeo.keywords), canonical: keep('seo-canonical', prevSeo.canonical), ogTitle: keep('seo-ogTitle', prevSeo.ogTitle), ogDescription: keep('seo-ogDescription', prevSeo.ogDescription), ogImage: keep('seo-ogImage', prevSeo.ogImage || data.media.ogImage), twitterTitle: keep('seo-twitterTitle', prevSeo.twitterTitle), twitterDescription: keep('seo-twitterDescription', prevSeo.twitterDescription), twitterImage: keep('seo-twitterImage', prevSeo.twitterImage || data.media.ogImage) };
-  data.location = { name: keep('loc-name', (prev.location || {}).name), address: keep('loc-address', (prev.location || {}).address), city: keep('loc-city', (prev.location || {}).city), region: keep('loc-region', (prev.location || {}).region), postal: keep('loc-postal', (prev.location || {}).postal), lat: keep('loc-lat', (prev.location || {}).lat), lng: keep('loc-lng', (prev.location || {}).lng), geoRegion: keep('loc-geoRegion', (prev.location || {}).geoRegion) };
+  data.location = { name: keep('loc-name', (prev.location || {}).name), address: keep('loc-address', (prev.location || {}).address), city: keep('loc-city', (prev.location || {}).city), region: keep('loc-region', (prev.location || {}).region), postal: keep('loc-postal', (prev.location || {}).postal), lat: keep('loc-lat', (prev.location || {}).lat), lng: keep('loc-lng', (prev.location || {}).lng), geoRegion: keep('loc-geoRegion', (prev.location || {}).geoRegion), gmb: keep('loc-gmb', (prev.location || {}).gmb), gmbReview: keep('loc-gmbReview', (prev.location || {}).gmbReview) };
   data.services = collectServices();
   data.nav = { main: collectNav('main'), footer: collectNav('footer'), services: collectNav('services') };
   data.pages = window._pagesSeo || prev.pages || {};
