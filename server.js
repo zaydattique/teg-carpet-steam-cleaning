@@ -7,9 +7,6 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-let nodemailer = null;
-try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer not installed - email via FormSubmit until npm install nodemailer'); }
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -20,11 +17,6 @@ if (!ADMIN_PASSWORD) {
 }
 /** Email address that receives every Get-an-Estimate lead (business owner - not the customer). */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
-const SMTP_HOST = process.env.SMTP_HOST || '';
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
-const SMTP_USER = process.env.SMTP_USER || '';
-const SMTP_PASS = process.env.SMTP_PASS || '';
-const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || NOTIFY_EMAIL;
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
@@ -101,6 +93,7 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'T.E.G Backe
 app.get('/api/content', (_req, res) => res.json(getContent()));
 
 async function sendOwnerNotification(entry) {
+  // Owner email via FormSubmit (no SMTP / nodemailer required)
   const subject = 'New estimate request - T.E.G Carpet Cleaning' + (entry.service ? ' (' + entry.service + ')' : '');
   const textBody = [
     'New quote / estimate request from the website.',
@@ -114,63 +107,29 @@ async function sendOwnerNotification(entry) {
     'Details:',
     entry.message || '(none)',
     '',
-    'This message was sent to the business owner only. Reply to the customer at: ' + entry.email
+    'Reply to the customer at: ' + entry.email
   ].join('\n');
-  const htmlBody = [
-    '<p><strong>New quote / estimate request</strong> from tegcarpetfurniturecleaning.com</p>',
-    '<table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">',
-    '<tr><td style="padding:4px 12px 4px 0"><strong>Name</strong></td><td>' + entry.name + '</td></tr>',
-    '<tr><td style="padding:4px 12px 4px 0"><strong>Phone</strong></td><td><a href="tel:' + entry.phone.replace(/[^0-9+]/g, '') + '">' + entry.phone + '</a></td></tr>',
-    '<tr><td style="padding:4px 12px 4px 0"><strong>Email</strong></td><td><a href="mailto:' + entry.email + '">' + entry.email + '</a></td></tr>',
-    '<tr><td style="padding:4px 12px 4px 0"><strong>Service</strong></td><td>' + (entry.service || '(not specified)') + '</td></tr>',
-    '<tr><td style="padding:4px 12px 4px 0"><strong>Submitted</strong></td><td>' + entry.createdAt + '</td></tr>',
-    '</table>',
-    '<p><strong>Details</strong><br>' + (entry.message ? String(entry.message).replace(/</g, '&lt;').replace(/\n/g, '<br>') : '(none)') + '</p>',
-    '<p style="color:#666;font-size:12px">Reply to the customer at <a href="mailto:' + entry.email + '">' + entry.email + '</a>.</p>'
-  ].join('');
 
-  if (nodemailer && SMTP_HOST && SMTP_USER && SMTP_PASS) {
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: { user: SMTP_USER, pass: SMTP_PASS }
-    });
-    await transporter.sendMail({
-      from: SMTP_FROM,
-      to: NOTIFY_EMAIL,
-      replyTo: entry.email,
-      subject,
-      text: textBody,
-      html: htmlBody
-    });
-    return { sent: true, to: NOTIFY_EMAIL, via: 'smtp' };
+  const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      name: entry.name,
+      email: entry.email,
+      phone: entry.phone,
+      service: entry.service || '',
+      message: textBody,
+      _subject: subject,
+      _replyto: entry.email,
+      _template: 'table',
+      _captcha: 'false'
+    })
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(function () { return ''; });
+    return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + String(errText).slice(0, 120) };
   }
-
-  // No SMTP setup required - delivers to owner inbox via FormSubmit
-  try {
-    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        name: entry.name,
-        email: entry.email,
-        phone: entry.phone,
-        service: entry.service || '',
-        message: textBody,
-        _subject: subject,
-        _replyto: entry.email,
-        _template: 'table'
-      })
-    });
-    if (!res.ok) {
-      const errText = await res.text().catch(function () { return ''; });
-      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + errText.slice(0, 120) };
-    }
-    return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit' };
-  } catch (e) {
-    return { sent: false, reason: e.message || 'FormSubmit failed' };
-  }
+  return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit' };
 }
 
 app.post('/api/contact', async (req, res) => {
@@ -193,7 +152,7 @@ app.post('/api/contact', async (req, res) => {
   let emailResult = { sent: false };
   try {
     emailResult = await sendOwnerNotification(entry);
-    if (emailResult.sent) console.log('Owner notify email sent to', emailResult.to, 'via', emailResult.via || 'email', 'for lead', entry.id);
+    if (emailResult.sent) console.log('Owner notify email sent to', emailResult.to, 'via', emailResult.via || 'formsubmit', 'for lead', entry.id);
     else console.warn('Owner notify email skipped:', emailResult.reason);
   } catch (err) {
     console.error('Owner notify email failed:', err.message);
@@ -313,5 +272,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: configured (value not logged)');
-  console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS), '| FormSubmit fallback: on');
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| via FormSubmit (no SMTP)');
 });
