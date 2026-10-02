@@ -19,7 +19,7 @@ if (!ADMIN_PASSWORD) {
   process.exit(1);
 }
 /** Email address that receives every Get-an-Estimate lead (business owner — not the customer). */
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@teg-carpetsteamcleaning.com';
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
 const SMTP_HOST = process.env.SMTP_HOST || '';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
 const SMTP_USER = process.env.SMTP_USER || '';
@@ -56,7 +56,7 @@ const DEFAULT_CONTENT = {
   seo: { title: 'T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee', description: 'Professional carpet, couch, tile & steam cleaning services by T.E.G in Milwaukee, WI.', keywords: 'carpet cleaning Milwaukee, steam cleaning Milwaukee', canonical: 'https://tegcarpetfurniturecleaning.com/', ogTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', ogDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', ogImage: '', twitterTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', twitterDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', twitterImage: '' },
   media: { heroImage: '', heroVideo: '', heroPoster: '', ogImage: '', aboutImage: '', logo: '', favicon: '' },
   pageMedia: {},
-  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@teg-carpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 — Always Available' },
+  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 — Always Available' },
   location: { name: 'T.E.G Carpet & Furniture Steam Cleaning', city: 'Milwaukee', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217, United States', region: 'WI', postal: '53217', lat: '43.0895', lng: '-87.8910', geoRegion: 'US-WI' },
   nav: { main: [], footer: [], services: [] },
   services: [],
