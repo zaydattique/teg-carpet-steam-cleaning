@@ -67,5 +67,3 @@ The public URL remains `/uploads/<filename>`; only the physical storage location
 The CMS save endpoint also writes JSON atomically (temporary file + rename), merges incoming Admin data with the current persistent copy so partial/stale payloads cannot wipe existing fields, then reads the file back before returning success. Admin only marks the change as saved after this server verification. If persistent CMS storage is accidentally configured inside the deploy directory, the server refuses to start instead of risking data loss.
 
 The public site reads CMS content from `/api/content`; the Admin panel reads and writes the same persistent content store. A redeploy therefore changes application code without resetting business/content edits.
-
-The CMS save endpoint also writes JSON atomically (temporary file + rename), reducing the chance of a partially-written content file after a restart or interrupted write.
