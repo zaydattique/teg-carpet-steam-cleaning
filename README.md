@@ -21,8 +21,8 @@ Website and backend for T.E.G Carpet & Furniture Steam Cleaning (Milwaukee, WI).
 ```bash
 npm install
 export ADMIN_PASSWORD=your-secret
-# Optional: SMTP for lead emails
-# export SMTP_HOST=... SMTP_USER=... SMTP_PASS=... NOTIFY_EMAIL=contact@tegcarpetsteamcleaning.com
+# Optional explicit lead-notification override; otherwise Admin contact email is used.
+# export NOTIFY_EMAIL=...
 node server.js
 ```
 
@@ -33,8 +33,8 @@ Open http://localhost:3000
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `ADMIN_PASSWORD` | Yes | Admin panel password |
-| `NOTIFY_EMAIL` | No | Owner email for form leads (default: contact@tegcarpetsteamcleaning.com) |
-| `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | No | Enable outbound email for leads |
+| `NOTIFY_EMAIL` | No | Explicit owner email override for form leads. If unset, the Admin contact email is used. |
+| `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | — | Not used by the current form-mail flow. |
 | `PORT` | No | Default 3000 |
 | `TEG_PERSIST_DIR` | No | Persistent root for CMS data and uploads. Defaults to `$HOME/.teg-carpet-persistent`. |
 | `TEG_DATA_DIR` | No | Optional override for persistent JSON data directory. |
@@ -42,7 +42,7 @@ Open http://localhost:3000
 
 ## Forms
 
-Estimate forms (`#quoteForm`, `#homeContactForm`) POST to `/api/contact`. Leads are stored in `data/submissions.json` and emailed to `NOTIFY_EMAIL` when SMTP is configured.
+Estimate forms (`#quoteForm`, `#homeContactForm`) POST to `/api/contact`. Leads are stored in the persistent `submissions.json`. The owner notification is sent through FormSubmit to the Admin contact email; `NOTIFY_EMAIL` is only an explicit deployment override.
 
 
 ## Persistent CMS data and media
@@ -63,5 +63,9 @@ TEG_PERSIST_DIR=/home/<your-hosting-user>/teg-carpet-persistent
 ```
 
 The public URL remains `/uploads/<filename>`; only the physical storage location changes. Admin-uploaded logos, hero images, posters, OG images and before/after media therefore keep working after a GitHub/Hostinger redeploy.
+
+The CMS save endpoint also writes JSON atomically (temporary file + rename), merges incoming Admin data with the current persistent copy so partial/stale payloads cannot wipe existing fields, then reads the file back before returning success. Admin only marks the change as saved after this server verification. If persistent CMS storage is accidentally configured inside the deploy directory, the server refuses to start instead of risking data loss.
+
+The public site reads CMS content from `/api/content`; the Admin panel reads and writes the same persistent content store. A redeploy therefore changes application code without resetting business/content edits.
 
 The CMS save endpoint also writes JSON atomically (temporary file + rename), reducing the chance of a partially-written content file after a restart or interrupted write.
