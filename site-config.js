@@ -255,6 +255,7 @@
 
     document.querySelectorAll('.logo-mark').forEach(function(el){ if (b.logoMark) text(el, b.logoMark); });
     document.querySelectorAll('.logo-text').forEach(function(el){ if (b.logoText) text(el, b.logoText); });
+    document.querySelectorAll('.footer-bottom p').forEach(function(el){ if (name) text(el, '© ' + new Date().getFullYear() + ' ' + name + '.'); });
     document.querySelectorAll('.footer-brand p').forEach(function(el){
       if (city && region) text(el, 'Professional carpet, furniture & floor cleaning in ' + city + ', ' + region + '.');
     });
