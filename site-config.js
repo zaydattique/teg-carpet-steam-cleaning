@@ -288,26 +288,7 @@
     setMeta('description', s.description);
     setMeta('keywords', s.keywords);
 
-    // Replace the injected LocalBusiness schema with the admin-controlled values.
-    var oldSchema = document.getElementById('teg-schema-ld');
-    if (oldSchema) oldSchema.remove();
-    var schema = {
-      '@context':'https://schema.org',
-      '@type':['LocalBusiness','HomeAndConstructionBusiness'],
-      '@id':(s.canonical || location.origin + '/') + '#business',
-      'name':name,
-      'description':s.description || '',
-      'url':s.canonical || location.origin + '/',
-      'telephone':phone,
-      'email':email,
-      'address':{'@type':'PostalAddress','streetAddress':c.addressLine1 || '', 'addressLocality':city, 'addressRegion':region, 'postalCode':postal, 'addressCountry':'US'},
-      'geo':(loc.lat && loc.lng) ? {'@type':'GeoCoordinates','latitude':Number(loc.lat),'longitude':Number(loc.lng)} : undefined,
-      'sameAs':gmb ? [gmb] : undefined
-    };
-    var sc = document.createElement('script');
-    sc.type='application/ld+json'; sc.id='teg-schema-ld'; sc.textContent=JSON.stringify(schema);
-    document.head.appendChild(sc);
-  }
+    // Structured data is server-rendered in the HTML response; do not create a client-only duplicate.
   function load() {
     fetch('/api/content', {credentials:'same-origin'})
       .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
