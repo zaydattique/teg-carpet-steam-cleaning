@@ -328,6 +328,50 @@ app.post('/api/admin/upload', requireAdmin, upload.single('file'), (req, res) =>
   res.json({ ok: true, url: '/uploads/' + req.file.filename, filename: req.file.filename });
 });
 
+function renderPublicHtml(req, res, next) {
+  if (req.method !== 'GET') return next();
+  const requested = req.path === '/' ? '/index.html' : req.path;
+  if (!/^\/[A-Za-z0-9._/-]+\.html$/.test(requested)) return next();
+
+  const filePath = path.resolve(__dirname, '.' + requested);
+  if (filePath !== path.resolve(__dirname, path.basename(filePath)) && !filePath.startsWith(path.resolve(__dirname) + path.sep)) return next();
+  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) return next();
+
+  let html = fs.readFileSync(filePath, 'utf8');
+  const content = getContent();
+  const branding = content.branding || {};
+  const contact = content.contact || {};
+  const seo = content.seo || {};
+  const pageKey = path.basename(filePath);
+  const page = (content.pages && content.pages[pageKey]) || {};
+  const service = (content.services || []).find((item) => item.href === pageKey) || {};
+
+  const siteName = String(branding.siteName || 'T.E.G Carpet & Furniture Steam Cleaning');
+  const phone = String(contact.phone || '+1 (414) 775-3705');
+  const email = String(contact.email || 'contact@tegcarpetsteamcleaning.com');
+  const address = String(contact.address || '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217');
+  const title = String(page.title || service.seoTitle || (pageKey === 'index.html' ? seo.title : '')).trim();
+  const description = String(page.description || service.seoDescription || (pageKey === 'index.html' ? seo.description : '')).trim();
+
+  html = html.replace(/(<title>)[\s\S]*?(<\/title>)/i, function (_, open, close) {
+    return title ? open + title.replace(/</g, '&lt;') + close : _;
+  });
+  if (description) {
+    const safeDescription = description.replace(/"/g, '&quot;');
+    if (/<meta\s+name=["']description["'][^>]*>/i.test(html)) {
+      html = html.replace(/<meta\s+name=["']description["'][^>]*>/i, '<meta name="description" content="' + safeDescription + '" />');
+    }
+  }
+  html = html.replace(/href=["']tel:["']/g, 'href="tel:' + phone.replace(/[^+0-9]/g, '') + '"');
+  html = html.replace(/href=["']mailto:["']/g, 'href="mailto:' + email + '"');
+  html = html.replace(/data-teg-phone(?![^>]*href=)/g, 'data-teg-phone');
+  html = html.replace(/(<span[^>]*data-teg-address[^>]*>)[\s\S]*?(<\/span>)/gi, '$1' + address.replace(/</g, '&lt;') + '$2');
+  html = html.replace(/(<a[^>]*data-teg-email[^>]*>)[\s\S]*?(<\/a>)/gi, '$1' + email + '$2');
+  html = html.replace(/(<a[^>]*data-teg-phone[^>]*>)[\s\S]*?(<\/a>)/gi, '$1' + phone + '$2');
+
+  res.type('html').send(html);
+}
+
 app.use(express.static(__dirname));
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ ok: false, error: 'Not found' });
