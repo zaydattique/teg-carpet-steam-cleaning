@@ -369,9 +369,75 @@ function renderPublicHtml(req, res, next) {
   html = html.replace(/(<a[^>]*data-teg-email[^>]*>)[\s\S]*?(<\/a>)/gi, '$1' + email + '$2');
   html = html.replace(/(<a[^>]*data-teg-phone[^>]*>)[\s\S]*?(<\/a>)/gi, '$1' + phone + '$2');
 
+  // Structured data is rendered into the HTML response so crawlers and AI agents can read it without JavaScript.
+  const canonicalBase = 'https://tegcarpetfurniturecleaning.com';
+  const canonicalUrl = canonicalBase + (pageKey === 'index.html' ? '/' : '/' + pageKey);
+  const serviceName = service.name || '';
+  const schema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
+        '@id': canonicalBase + '/#business',
+        name: siteName,
+        url: canonicalBase + '/',
+        telephone: phone,
+        email: email,
+        description: String(seo.description || description || ''),
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: String((content.location || {}).addressLine1 || contact.addressLine1 || address).split(',')[0],
+          addressLocality: String(contact.city || (content.location || {}).city || 'Milwaukee'),
+          addressRegion: String(contact.region || (content.location || {}).region || 'WI'),
+          postalCode: String(contact.postal || (content.location || {}).postal || '53217'),
+          addressCountry: 'US'
+        },
+        geo: ((content.location || {}).lat && (content.location || {}).lng) ? {
+          '@type': 'GeoCoordinates',
+          latitude: Number((content.location || {}).lat),
+          longitude: Number((content.location || {}).lng)
+        } : undefined,
+        areaServed: ['Milwaukee','Wauwatosa','Brookfield','New Berlin','West Allis','Greenfield','Franklin','Muskego','Pewaukee','Oak Creek','Elm Grove','Hales Corners','Greendale'].map(function (name) {
+          return { '@type': 'City', name: name, containedInPlace: { '@type': 'State', name: 'Wisconsin' } };
+        }),
+        sameAs: (content.location || {}).gmb ? [content.location.gmb] : undefined
+      },
+      {
+        '@type': 'WebSite',
+        '@id': canonicalBase + '/#website',
+        url: canonicalBase + '/',
+        name: siteName,
+        publisher: { '@id': canonicalBase + '/#business' }
+      },
+      {
+        '@type': 'WebPage',
+        '@id': canonicalUrl + '#webpage',
+        url: canonicalUrl,
+        name: title || siteName,
+        description: description || String(seo.description || ''),
+        isPartOf: { '@id': canonicalBase + '/#website' },
+        about: { '@id': canonicalBase + '/#business' }
+      }
+    ]
+  };
+  if (serviceName) {
+    schema['@graph'].push({
+      '@type': 'Service',
+      '@id': canonicalUrl + '#service',
+      name: serviceName,
+      description: String(service.description || service.seoDescription || description || ''),
+      url: canonicalUrl,
+      provider: { '@id': canonicalBase + '/#business' },
+      areaServed: { '@type': 'City', name: 'Milwaukee', containedInPlace: { '@type': 'State', name: 'Wisconsin' } }
+    });
+  }
+  const schemaTag = '<script type="application/ld+json">' + JSON.stringify(schema).replace(/<\\//g, '<\\\\/') + '</script>';
+  if (/<\\/head>/i.test(html)) html = html.replace(/<\\/head>/i, schemaTag + '</head>');
+
   res.type('html').send(html);
 }
 
+app.use(renderPublicHtml);
 app.use(express.static(__dirname));
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ ok: false, error: 'Not found' });
