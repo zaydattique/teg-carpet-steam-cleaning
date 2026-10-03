@@ -432,7 +432,7 @@ function renderPublicHtml(req, res, next) {
     });
   }
   const schemaTag = '<script type="application/ld+json">' + JSON.stringify(schema).replace(/<\\//g, '<\\\\/') + '</script>';
-  if (/<\\/head>/i.test(html)) html = html.replace(/<\\/head>/i, schemaTag + '</head>');
+  if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, schemaTag + '</head>');
 
   res.type('html').send(html);
 }
