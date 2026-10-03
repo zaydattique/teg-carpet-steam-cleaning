@@ -175,6 +175,27 @@ function startPhoneShake() {
 }
 startPhoneShake();
 
+(function ensureMobileActionBar() {
+  function run() {
+    if (document.getElementById('teg-mobile-actions')) return;
+    if (!document.body || !window.matchMedia('(max-width: 767px)').matches) return;
+    var business = window.__TEG_BUSINESS || {};
+    var bar = document.createElement('div');
+    bar.id = 'teg-mobile-actions';
+    bar.className = 'teg-mobile-actions';
+    var tel = business.tel || '';
+    var sms = business.sms || tel;
+    bar.innerHTML =
+      '<a href="tel:' + tel + '" class="teg-mobile-action teg-mobile-call" aria-label="Call T.E.G now">Call</a>' +
+      '<a href="sms:' + sms + '" class="teg-mobile-action teg-mobile-text" aria-label="Text T.E.G now">Text</a>' +
+      '<a href="contact.html#quoteForm" class="teg-mobile-action teg-mobile-estimate">Free Estimate</a>';
+    document.body.appendChild(bar);
+    document.body.classList.add('has-mobile-actions');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+
 (function ensureSmsFloat() {
   function run() {
     document.querySelectorAll('a.whatsapp-float').forEach(function (el) { el.remove(); });
