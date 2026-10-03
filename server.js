@@ -354,7 +354,7 @@ function renderPublicHtml(req, res, next) {
   const description = String(page.description || service.seoDescription || (pageKey === 'index.html' ? seo.description : '')).trim();
 
   html = html.replace(/(<title>)[\s\S]*?(<\/title>)/i, function (_, open, close) {
-    return title ? open + siteName.replace(/</g, '&lt;') + ' | ' + title.replace(/</g, '&lt;') + close : _;
+    return title ? open + title.replace(/</g, '&lt;') + close : _;
   });
   if (description) {
     const safeDescription = description.replace(/"/g, '&quot;');
