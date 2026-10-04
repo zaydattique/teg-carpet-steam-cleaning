@@ -79,10 +79,24 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + safe);
   }
 });
-const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 }, fileFilter: (_req, file, cb) => {
-  if (/^(image|video)\//.test(file.mimetype)) cb(null, true);
-  else cb(new Error('Only images and videos allowed'));
-}});
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024,
+    files: 1,
+    fields: 10,
+    parts: 11,
+    fieldNameSize: 200,
+    fieldSize: 64 * 1024,
+    fieldNestingDepth: 5,
+    fieldArrayIndexLimit: 100,
+    headerPairs: 200
+  },
+  fileFilter: (_req, file, cb) => {
+    if (/^(image|video)\//.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Only images and videos allowed'));
+  }
+});
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'T.E.G Backend', time: new Date().toISOString() }));
 app.get('/api/content', (_req, res) => res.json(getContent()));
