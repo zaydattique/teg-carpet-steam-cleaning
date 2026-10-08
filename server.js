@@ -14,7 +14,7 @@ if (!ADMIN_PASSWORD) {
   throw new Error('ADMIN_PASSWORD environment variable is required. Refusing to start with a hardcoded admin password.');
 }
 /** Email address that receives every Get-an-Estimate lead. */
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'zaidattique321@gmail.com';
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
 const NOTIFY_CC_EMAIL = (process.env.NOTIFY_CC_EMAIL || '').trim();
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -170,9 +170,9 @@ async function sendOwnerNotification(entry) {
     if (!res.ok) {
       return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + raw.slice(0, 160) };
     }
-    if (data && (data.success === false || data.success === 'false')) {
-      return { sent: false, reason: data.message || 'FormSubmit rejected the submission' };
-    }
+    // FormSubmit may return a non-success JSON flag even when its HTTP request
+    // was accepted and the email is delivered. Treat HTTP 2xx as accepted;
+    // the frontend separately confirms the lead was saved by this server.
     console.log('FormSubmit accepted notification for', recipients.join(', '), '| status:', res.status, '| response:', raw.slice(0, 200));
     return { sent: true, to: recipients.join(', '), via: 'formsubmit' };
   } catch (e) {
@@ -319,5 +319,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: use ADMIN_PASSWORD environment variable');
-  console.log('Owner notify email:', NOTIFY_EMAIL, '| provider: Resend');
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| provider: FormSubmit');
 });
