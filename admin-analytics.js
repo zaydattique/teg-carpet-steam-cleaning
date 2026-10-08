@@ -67,7 +67,7 @@
     var by = d.byEvent || {};
     var keys = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; });
     document.getElementById('analyticsEvents').innerHTML = keys.length
-      ? keys.map(function (k) { return '<div class="sub-card" style="display:flex;justify-content:space-between"><span>' + k + '</span><strong>' + by[k] + '</strong></div>'; }).join('')
+      ? keys.map(function (k) { return '<div class="sub-card" style="display:flex;justify-content:space-between"><span>' + esc(k) + '</span><strong>' + Number(by[k] || 0) + '</strong></div>'; }).join('')
       : '<p style="color:#94a3b8">No events yet.</p>';
     document.getElementById('analyticsRecent').innerHTML = (d.recent || []).slice(0, 40).map(function (e) {
       return '<div style="padding:6px 0;border-bottom:1px solid #e2e8f0"><strong>' + esc(e.event || '') + '</strong> · ' + esc(e.path || '') + ' <span style="color:#94a3b8">' + esc(e.ts || '') + '</span></div>';
