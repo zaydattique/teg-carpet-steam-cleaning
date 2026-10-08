@@ -23,7 +23,7 @@ function showToast(msg, ok) {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 function esc(s) {
-  return String(s || '').replace(/&/g, '&').replace(/"/g, '"').replace(/</g, '<');
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;');
 }
 function toggleSidebar() {
   const s = document.getElementById('adminSidebar');
@@ -144,9 +144,8 @@ async function load() {
     fill(data);
     showToast('Content loaded ✓', true);
   }
-  document.getElementById('connStatus').textContent = serverMode
-    ? 'Connected — media preserved on save'
-    : 'Local only';
+  const connStatus = document.getElementById('connStatus');
+  if (connStatus) connStatus.textContent = serverMode ? 'Connected' : 'Local only';
 }
 function fill(d) {
   const b = d.branding || {}, m = d.media || {}, c = d.contact || {}, s = d.seo || {}, loc = d.location || {};

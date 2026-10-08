@@ -111,27 +111,27 @@ if (form) {
         setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3500);
         return;
       }
-      if (res.ok && data.ok && data.emailSent === false) {
-        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: false, emailSent: false });
-        btn.textContent = 'Saved, email failed';
-        btn.disabled = false;
-        setTimeout(function () { btn.textContent = original; }, 4500);
-        var status = form.querySelector('.form-status');
-        if (!status) {
-          status = document.createElement('p');
-          status.className = 'form-status';
-          status.setAttribute('role', 'alert');
-          form.appendChild(status);
-        }
-        status.textContent = 'We couldn’t send your request right now. Please try again or call us directly.';
-        return;
-      }
       throw new Error(data.error || 'Server error');
     } catch (err) {
-      var subject = encodeURIComponent('Quote Request — T.E.G Carpet Cleaning');
-      var body = encodeURIComponent('Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email + '\nService: ' + service + '\n\nDetails:\n' + message);
-      window.location.href = 'mailto:contact@tegcarpetsteamcleaning.com?subject=' + subject + '&body=' + body;
-      btn.textContent = 'Opening email…';
+      var recipient = (window.__TEG_CONTENT && window.__TEG_CONTENT.contact && window.__TEG_CONTENT.contact.email) || '';
+      if (!recipient) {
+        try {
+          var cmsResponse = await fetch('/api/content');
+          if (cmsResponse.ok) { var cmsData = await cmsResponse.json(); recipient = (cmsData.contact && cmsData.contact.email) || ''; }
+        } catch (_) {}
+      }
+      if (recipient) {
+        var subject = encodeURIComponent('Quote Request');
+        var body = encodeURIComponent('Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email + '\nService: ' + service + '\n\nDetails:\n' + message);
+        window.location.href = 'mailto:' + encodeURIComponent(recipient) + '?subject=' + subject + '&body=' + body;
+        btn.textContent = 'Opening email…';
+      } else {
+        btn.textContent = 'Please call us';
+        var status = form.querySelector('.form-status') || document.createElement('p');
+        status.className = 'form-status'; status.setAttribute('role','alert');
+        status.textContent = 'We could not connect just now. Please call us directly.';
+        if (!status.parentNode) form.appendChild(status);
+      }
       setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 2500);
     }
   });

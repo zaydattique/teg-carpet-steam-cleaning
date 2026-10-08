@@ -219,13 +219,13 @@ app.post('/api/analytics/event', (req, res) => {
     const body = req.body || {};
     const entry = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      event: String(body.event || 'unknown').slice(0, 64),
+      event: /^(page_view|engagement_tick|scroll_depth|phone_click|gmb_click|gmb_review_click|maps_click|sms_click|cta_click|form_attempt|form_submit)$/.test(String(body.event || '')) ? String(body.event) : 'other',
       props: body.props && typeof body.props === 'object' ? body.props : {},
       path: String(body.path || '').slice(0, 200),
       title: String(body.title || '').slice(0, 120),
       referrer: String(body.referrer || '').slice(0, 300),
       sid: String(body.sid || '').slice(0, 40),
-      ts: body.ts || new Date().toISOString(),
+      ts: new Date().toISOString(),
       ua: String(body.ua || '').slice(0, 180),
       screen: String(body.screen || '').slice(0, 20),
       lang: String(body.lang || '').slice(0, 16),
@@ -250,11 +250,16 @@ function aggregateAnalytics(events, days) {
   const since = Date.now() - (days || 30) * 86400000;
   const filtered = (events || []).filter((e) => { const t = Date.parse(e.ts || 0); return !isNaN(t) && t >= since; });
   const count = (name) => filtered.filter((e) => e.event === name).length;
-  const byPath = {}, byEvent = {}, byDay = {}, sessions = new Set();
+  const byPath = {}, byEvent = {}, byDay = {}, sessions = new Set(), viewedSessions = new Set(), convertedSessions = new Set();
+  const conversionEvents = new Set(['phone_click','gmb_click','gmb_review_click','maps_click','sms_click','form_submit']);
   filtered.forEach((e) => {
     byEvent[e.event] = (byEvent[e.event] || 0) + 1;
-    if (e.path) byPath[e.path] = (byPath[e.path] || 0) + 1;
-    if (e.sid) sessions.add(e.sid);
+    if (e.path && e.event === 'page_view') byPath[e.path] = (byPath[e.path] || 0) + 1;
+    if (e.sid) {
+      sessions.add(e.sid);
+      if (e.event === 'page_view') viewedSessions.add(e.sid);
+      if (conversionEvents.has(e.event)) convertedSessions.add(e.sid);
+    }
     const day = (e.ts || '').slice(0, 10);
     if (day) byDay[day] = (byDay[day] || 0) + 1;
   });
@@ -262,11 +267,12 @@ function aggregateAnalytics(events, days) {
   const phone = count('phone_click');
   const gmb = count('gmb_click') + count('gmb_review_click') + count('maps_click');
   const pageViews = count('page_view');
+  const convertedViewedSessions = Array.from(convertedSessions).filter((sid) => viewedSessions.has(sid)).length;
   return {
-    rangeDays: days || 30, totalEvents: filtered.length, pageViews, sessions: sessions.size,
+    rangeDays: days || 30, totalEvents: filtered.length, pageViews, sessions: viewedSessions.size,
     phoneClicks: phone, gmbClicks: gmb, smsClicks: count('sms_click'), ctaClicks: count('cta_click'),
-    formSubmits: count('form_submit'),
-    conversionRate: pageViews ? Math.round(((phone + gmb + count('form_submit')) / pageViews) * 1000) / 10 : 0,
+    formAttempts: count('form_attempt'), formSubmits: count('form_submit'),
+    conversionRate: viewedSessions.size ? Math.round((convertedViewedSessions / viewedSessions.size) * 1000) / 10 : 0,
     byEvent, topPages, byDay, recent: filtered.slice(-100).reverse()
   };
 }
@@ -304,6 +310,21 @@ app.patch('/api/admin/submissions/:id', requireAdmin, (req, res) => {
 app.delete('/api/admin/submissions/:id', requireAdmin, (req, res) => {
   writeJSON(SUBMISSIONS_FILE, readJSON(SUBMISSIONS_FILE, []).filter((s) => s.id !== req.params.id));
   res.json({ ok: true });
+});
+app.get('/api/admin/media', requireAdmin, (_req, res) => {
+  try {
+    const files = fs.readdirSync(UPLOADS_DIR).map((filename) => {
+      const full = path.join(UPLOADS_DIR, filename);
+      const stat = fs.statSync(full);
+      if (!stat.isFile()) return null;
+      const ext = path.extname(filename).toLowerCase();
+      const type = /\\.(mp4|webm|mov|m4v)$/i.test(filename) ? 'video' : 'image';
+      return { filename, url: '/uploads/' + encodeURIComponent(filename), type, size: stat.size, updatedAt: stat.mtime.toISOString(), ext };
+    }).filter(Boolean).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    res.json({ ok: true, data: files });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: 'Could not read media library' });
+  }
 });
 app.post('/api/admin/upload', requireAdmin, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ ok: false, error: 'No file' });

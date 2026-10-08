@@ -4,7 +4,7 @@
     "logoMark": "T.E.G",
     "logoText": "Carpet & Furniture Steam Cleaning",
     "logoUrl": "",
-    "faviconUrl": ""
+    "faviconUrl": "/favicon.svg"
   },
   "seo": {
     "title": "T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee",
@@ -25,15 +25,169 @@
     "ogImage": "",
     "aboutImage": "",
     "logo": "",
-    "favicon": ""
+    "favicon": "/favicon.svg"
   },
   "pageMedia": {
-    "services.html": { "heroImage": "" },
-    "areas.html": { "heroImage": "" },
-    "about.html": { "heroImage": "" },
-    "faq.html": { "heroImage": "" },
-    "contact.html": { "heroImage": "" },
-    "reviews.html": { "heroImage": "" }
+    "services.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "areas.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "about.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "faq.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "contact.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "reviews.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "index.html": {
+      "images": [],
+      "videos": [
+        ""
+      ],
+      "videoPosters": [
+        ""
+      ]
+    },
+    "service-carpet-cleaning.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-tile-grout.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-couch-cleaning.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-area-rug.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-stain-removal.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-steam-cleaning.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-commercial.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-water-damage.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-carpet-stretching.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "service-hardwood.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-milwaukee.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-wauwatosa.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-brookfield.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-new-berlin.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-west-allis.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-greenfield.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-franklin.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-muskego.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-pewaukee.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-oak-creek.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-elm-grove.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-hales-corners.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "area-greendale.html": {
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    }
   },
   "contact": {
     "phone": "+1 (414) 775-3705",
@@ -60,30 +214,90 @@
   },
   "nav": {
     "main": [
-      { "label": "Home", "href": "index.html" },
-      { "label": "Services", "href": "services.html" },
-      { "label": "Areas We Serve", "href": "areas.html" },
-      { "label": "About", "href": "about.html" },
-      { "label": "FAQ", "href": "faq.html" },
-      { "label": "Reviews", "href": "reviews.html" },
-      { "label": "Contact", "href": "contact.html" }
+      {
+        "label": "Home",
+        "href": "index.html"
+      },
+      {
+        "label": "Services",
+        "href": "services.html"
+      },
+      {
+        "label": "Areas We Serve",
+        "href": "areas.html"
+      },
+      {
+        "label": "About",
+        "href": "about.html"
+      },
+      {
+        "label": "FAQ",
+        "href": "faq.html"
+      },
+      {
+        "label": "Reviews",
+        "href": "reviews.html"
+      },
+      {
+        "label": "Contact",
+        "href": "contact.html"
+      }
     ],
     "footer": [
-      { "label": "Home", "href": "index.html" },
-      { "label": "Services", "href": "services.html" },
-      { "label": "Areas We Serve", "href": "areas.html" },
-      { "label": "About", "href": "about.html" },
-      { "label": "FAQ", "href": "faq.html" },
-      { "label": "Reviews", "href": "reviews.html" },
-      { "label": "Contact", "href": "contact.html" }
+      {
+        "label": "Home",
+        "href": "index.html"
+      },
+      {
+        "label": "Services",
+        "href": "services.html"
+      },
+      {
+        "label": "Areas We Serve",
+        "href": "areas.html"
+      },
+      {
+        "label": "About",
+        "href": "about.html"
+      },
+      {
+        "label": "FAQ",
+        "href": "faq.html"
+      },
+      {
+        "label": "Reviews",
+        "href": "reviews.html"
+      },
+      {
+        "label": "Contact",
+        "href": "contact.html"
+      }
     ],
     "services": [
-      { "label": "Carpet Cleaning", "href": "service-carpet-cleaning.html" },
-      { "label": "Tile & Grout", "href": "service-tile-grout.html" },
-      { "label": "Upholstery", "href": "service-couch-cleaning.html" },
-      { "label": "Steam Cleaning", "href": "service-steam-cleaning.html" },
-      { "label": "Pet Odor & Stain", "href": "service-stain-removal.html" },
-      { "label": "Commercial", "href": "service-commercial.html" }
+      {
+        "label": "Carpet Cleaning",
+        "href": "service-carpet-cleaning.html"
+      },
+      {
+        "label": "Tile & Grout",
+        "href": "service-tile-grout.html"
+      },
+      {
+        "label": "Upholstery",
+        "href": "service-couch-cleaning.html"
+      },
+      {
+        "label": "Steam Cleaning",
+        "href": "service-steam-cleaning.html"
+      },
+      {
+        "label": "Pet Odor & Stain",
+        "href": "service-stain-removal.html"
+      },
+      {
+        "label": "Commercial",
+        "href": "service-commercial.html"
+      }
     ]
   },
   "services": [
