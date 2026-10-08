@@ -198,6 +198,79 @@
     }
   }
 
+  function applyPageAssets(pageMedia) {
+    var path = pathName();
+    var entry = (pageMedia || {})[path] || {};
+    if (Array.isArray(entry.images)) {
+      var imgs = document.querySelectorAll('img');
+      entry.images.forEach(function (url, i) {
+        var img = imgs[i];
+        if (!img) return;
+        if (typeof url === 'string' && url.trim()) img.setAttribute('src', absUrl(url));
+        else if (url === '') { img.removeAttribute('src'); img.removeAttribute('srcset'); }
+      });
+    }
+    if (Array.isArray(entry.videos)) {
+      var videos = document.querySelectorAll('video');
+      entry.videos.forEach(function (url, i) {
+        var video = videos[i]; if (!video) return;
+        var src = video.querySelector('source');
+        if (typeof url === 'string' && url.trim()) {
+          if (!src) { src = document.createElement('source'); video.appendChild(src); }
+          src.setAttribute('src', absUrl(url));
+          src.setAttribute('type', /\\.webm(?:$|\\?)/i.test(url) ? 'video/webm' : 'video/mp4');
+          video.style.display = '';
+          try { video.load(); } catch (e) {}
+        } else {
+          if (src) src.removeAttribute('src');
+          video.removeAttribute('src');
+          video.style.display = 'none';
+          try { video.load(); } catch (e) {}
+        }
+        var posters = entry.videoPosters || [];
+        if (posters[i]) video.setAttribute('poster', absUrl(posters[i]));
+        else if (Array.isArray(entry.videoPosters)) video.removeAttribute('poster');
+      });
+    }
+  }
+
+  function applySeo(s, m) {
+    s = s || {}; m = m || {};
+    if (s.title) document.title = s.title;
+    if (s.description) setMeta('description', s.description, true);
+    if (s.keywords) setMeta('keywords', s.keywords, true);
+    if (s.ogTitle) setMeta('og:title', s.ogTitle);
+    if (s.ogDescription) setMeta('og:description', s.ogDescription);
+    if (s.twitterTitle) setMeta('twitter:title', s.twitterTitle, true);
+    if (s.twitterDescription) setMeta('twitter:description', s.twitterDescription, true);
+    if (s.canonical) {
+      var link = document.querySelector('link[rel="canonical"]');
+      if (!link) { link = document.createElement('link'); link.rel = 'canonical'; document.head.appendChild(link); }
+      link.href = s.canonical;
+    }
+    var og = (s.ogImage || m.ogImage || '').trim();
+    var full = og ? (og.indexOf('http') === 0 ? og : location.origin + absUrl(og)) : '';
+    if (full) {
+      setMeta('og:image', full);
+      setMeta('twitter:image', full, true);
+    } else {
+      document.querySelectorAll('meta[property="og:image"],meta[name="twitter:image"]').forEach(function (node) { node.remove(); });
+    }
+    var ld = document.querySelectorAll('script[type="application/ld+json"]');
+    ld.forEach(function (node) {
+      try {
+        var json = JSON.parse(node.textContent);
+        function updateImage(obj) {
+          if (!obj || typeof obj !== 'object') return;
+          if (full) obj.image = full;
+          else if (obj.image && /favicon\\.svg|logo/i.test(String(obj.image))) delete obj.image;
+          Object.keys(obj).forEach(function(k) { if (obj[k] && typeof obj[k] === 'object') updateImage(obj[k]); });
+        }
+        updateImage(json); node.textContent = JSON.stringify(json);
+      } catch (e) {}
+    });
+  }
+
   function applyBranding(b, m) {
     var logo = absUrl((m && m.logo) || (b && b.logoUrl) || '');
     var fav = absUrl((m && m.favicon) || (b && b.faviconUrl) || '');
@@ -222,11 +295,11 @@
         a.insertBefore(img, a.firstChild);
       });
     }
+    var link = document.querySelector('link[rel="icon"]');
     if (fav) {
-      var link = document.querySelector('link[rel="icon"]');
       if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
       link.href = fav;
-    }
+    } else if (link) { link.remove(); }
   }
 
   function applyOg(s, m) {
@@ -243,9 +316,11 @@
     if (!data) return;
     try {
       applyHero(data.media || {});
+      applyPageAssets(data.pageMedia || {});
       applyPageHero(data.pageMedia || {}, data.media || {});
       applyServiceMedia(data.services || []);
       applyBranding(data.branding || {}, data.media || {});
+      applySeo(data.seo || {}, data.media || {});
       applyOg(data.seo || {}, data.media || {});
       window.__TEG_CONTENT = data;
     } catch (e) {}
