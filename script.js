@@ -1,12 +1,3 @@
-// Load CMS config applicator
-(function loadSiteConfig() {
-  if (window.TEG_SITE) return;
-  var s = document.createElement('script');
-  s.src = 'site-config.js';
-  s.async = false;
-  document.head.appendChild(s);
-})();
-
 // Analytics tracker (Call Now, GMB, CTAs, page views)
 (function loadAnalytics() {
   var s = document.createElement('script');
@@ -116,7 +107,7 @@ if (form) {
         btn.textContent = 'Saved, email failed';
         btn.disabled = false;
         setTimeout(function () { btn.textContent = original; }, 4500);
-        alert('Your request was saved, but the email notification could not be confirmed. Please call us directly to make sure we receive it.');
+        alert('Your request was saved, but the email notification could not be confirmed.' + (data.emailError ? '\n\n' + data.emailError : '') + '\n\nPlease try again or call us directly.');
         return;
       }
       throw new Error(data.error || 'Server error');
