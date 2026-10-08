@@ -107,7 +107,14 @@ if (form) {
         btn.textContent = 'Saved, email failed';
         btn.disabled = false;
         setTimeout(function () { btn.textContent = original; }, 4500);
-        alert('Your request was saved, but the email notification could not be confirmed.' + (data.emailError ? '\n\n' + data.emailError : '') + '\n\nPlease try again or call us directly.');
+        var status = form.querySelector('.form-status');
+        if (!status) {
+          status = document.createElement('p');
+          status.className = 'form-status';
+          status.setAttribute('role', 'alert');
+          form.appendChild(status);
+        }
+        status.textContent = 'We couldn’t send your request right now. Please try again or call us directly.';
         return;
       }
       throw new Error(data.error || 'Server error');
