@@ -213,7 +213,7 @@
   var TEXT_SELECTOR='h1,h2,h3,h4,p,li,button,label,span,a';
   function eligibleTextNodes(doc) {
     return Array.from(doc.querySelectorAll(TEXT_SELECTOR)).filter(function(node){
-      if(node.closest('script,style,svg,noscript'))return false;
+      if(node.closest('script,style,svg,noscript,[id^="teg-"],.teg-footer-map,.teg-contact-map-box,.teg-gmb-bar,#teg-related-services,#teg-answer-facts,.ba-section,[data-cms-ba="1"]'))return false;
       return !Array.from(node.querySelectorAll(TEXT_SELECTOR)).length;
     });
   }
