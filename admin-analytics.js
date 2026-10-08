@@ -48,6 +48,7 @@
         document.getElementById('analyticsKpis').innerHTML = '<p style="color:#b91c1c">Server error — is Node running?</p>';
       });
   };
+  function esc(value) { return String(value == null ? '' : value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;'); }
   function kpi(label, value, hi) {
     return '<div style="background:#f8fafc;border:1px solid ' + (hi ? '#0ea5e9' : '#e2e8f0') + ';border-radius:12px;padding:14px' + (hi ? ';background:#f0f9ff' : '') + '"><div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase">' + label + '</div><div style="font-size:22px;font-weight:700;color:#0a3d6b;margin-top:4px">' + value + '</div></div>';
   }
@@ -56,12 +57,12 @@
       kpi('Page views', d.pageViews || 0) + kpi('Sessions', d.sessions || 0) +
       kpi('Call Now clicks', d.phoneClicks || 0, true) + kpi('GMB / Maps', d.gmbClicks || 0, true) +
       kpi('SMS', d.smsClicks || 0) + kpi('Estimate CTAs', d.ctaClicks || 0) +
-      kpi('Forms', d.formSubmits || 0) + kpi('Conv %', (d.conversionRate || 0) + '%', true);
+      kpi('Form attempts', d.formAttempts || 0) + kpi('Successful forms', d.formSubmits || 0) + kpi('Conv %', (d.conversionRate || 0) + '%', true);
     document.getElementById('analyticsFunnel').innerHTML =
       '<div class="sub-card"><p>Views ' + (d.pageViews || 0) + ' → CTA ' + (d.ctaClicks || 0) + ' → Call Now ' + (d.phoneClicks || 0) + ' | GMB ' + (d.gmbClicks || 0) + ' | Forms ' + (d.formSubmits || 0) + '</p></div>';
     var pages = d.topPages || [];
     document.getElementById('analyticsPages').innerHTML = pages.length
-      ? pages.map(function (p) { return '<div class="sub-card"><h4 style="margin:0">' + p.path + '</h4><p style="margin:4px 0 0">' + p.views + ' views</p></div>'; }).join('')
+      ? pages.map(function (p) { return '<div class="sub-card"><h4 style="margin:0">' + esc(p.path) + '</h4><p style="margin:4px 0 0">' + Number(p.views || 0) + ' views</p></div>'; }).join('')
       : '<p style="color:#94a3b8">No data yet — traffic on live site fills this.</p>';
     var by = d.byEvent || {};
     var keys = Object.keys(by).sort(function (a, b) { return by[b] - by[a]; });
