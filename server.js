@@ -305,6 +305,21 @@ app.delete('/api/admin/submissions/:id', requireAdmin, (req, res) => {
   writeJSON(SUBMISSIONS_FILE, readJSON(SUBMISSIONS_FILE, []).filter((s) => s.id !== req.params.id));
   res.json({ ok: true });
 });
+app.get('/api/admin/media', requireAdmin, (_req, res) => {
+  try {
+    const files = fs.readdirSync(UPLOADS_DIR).map((filename) => {
+      const full = path.join(UPLOADS_DIR, filename);
+      const stat = fs.statSync(full);
+      if (!stat.isFile()) return null;
+      const ext = path.extname(filename).toLowerCase();
+      const type = /\\.(mp4|webm|mov|m4v)$/i.test(filename) ? 'video' : 'image';
+      return { filename, url: '/uploads/' + encodeURIComponent(filename), type, size: stat.size, updatedAt: stat.mtime.toISOString(), ext };
+    }).filter(Boolean).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    res.json({ ok: true, data: files });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: 'Could not read media library' });
+  }
+});
 app.post('/api/admin/upload', requireAdmin, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ ok: false, error: 'No file' });
   res.json({ ok: true, url: '/uploads/' + req.file.filename, filename: req.file.filename });
