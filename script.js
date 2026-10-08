@@ -115,7 +115,7 @@ if (form) {
     } catch (err) {
       var subject = encodeURIComponent('Quote Request — T.E.G Carpet Cleaning');
       var body = encodeURIComponent('Name: ' + name + '\nPhone: ' + phone + '\nEmail: ' + email + '\nService: ' + service + '\n\nDetails:\n' + message);
-      window.location.href = 'mailto:contact@teg-carpetsteamcleaning.com?subject=' + subject + '&body=' + body;
+      window.location.href = 'mailto:contact@tegcarpetsteamcleaning.com?subject=' + subject + '&body=' + body;
       btn.textContent = 'Opening email…';
       setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 2500);
     }
