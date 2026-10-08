@@ -271,9 +271,44 @@
     });
   }
 
+  function applyContact(contact, locationData) {
+    contact = contact || {}; locationData = locationData || {};
+    var tel = contact.phoneTel || contact.phone || '';
+    var sms = contact.sms || contact.phoneTel || contact.phone || '';
+    var email = contact.email || '';
+    if (tel) document.querySelectorAll('a[href^="tel:"]').forEach(function(a){a.href='tel:'+String(tel).replace(/[^+0-9]/g,'');});
+    if (sms) document.querySelectorAll('a[href^="sms:"]').forEach(function(a){a.href='sms:'+String(sms).replace(/[^+0-9]/g,'');});
+    if (email) document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){
+      a.href='mailto:'+email;
+      if (/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test((a.textContent||'').trim())) a.textContent=email;
+    });
+    if (contact.phone) {
+      document.querySelectorAll('.phone-link').forEach(function(a){
+        if (/\\+?\\d[\\d() .-]{6,}/.test((a.textContent||'').trim())) a.textContent=contact.phone;
+      });
+    }
+    var address = contact.address || [contact.addressLine1,contact.city,contact.region,contact.postal].filter(Boolean).join(', ');
+    if (address) {
+      document.querySelectorAll('.contact-item').forEach(function(item){
+        var label=(item.querySelector('strong')||{}).textContent||'';
+        if (/address/i.test(label)) { var target=item.querySelector('span'); if(target)target.textContent=address; }
+      });
+      document.querySelectorAll('.footer-contact p').forEach(function(p){p.textContent=address;});
+    }
+    if (contact.hours) document.querySelectorAll('.contact-item').forEach(function(item){
+      var label=(item.querySelector('strong')||{}).textContent||'';
+      if (/hours/i.test(label)){var target=item.querySelector('span');if(target)target.textContent=contact.hours;}
+    });
+    if (locationData.gmbUrl) {
+      document.querySelectorAll('a[href*="g.page"],a[href*="google.com/maps"],a.teg-maps,a.teg-review,a.teg-gmb-link').forEach(function(a){a.href=locationData.gmbUrl;});
+    }
+  }
+
   function applyBranding(b, m) {
     var logo = absUrl((m && m.logo) || (b && b.logoUrl) || '');
     var fav = absUrl((m && m.favicon) || (b && b.faviconUrl) || '');
+    document.querySelectorAll('a.logo .logo-mark').forEach(function(el){if(b&&b.logoMark)el.textContent=b.logoMark;});
+    document.querySelectorAll('a.logo .logo-text').forEach(function(el){if(b&&(b.tagline||b.logoText))el.textContent=b.tagline||b.logoText;});
     if (logo) {
       document.querySelectorAll('a.logo').forEach(function (a) {
         if (a.querySelector('img.cms-logo')) return;
@@ -318,6 +353,7 @@
       applyHero(data.media || {});
       applyPageAssets(data.pageMedia || {});
       applyPageHero(data.pageMedia || {}, data.media || {});
+      applyContact(data.contact || {}, data.location || {});
       applyServiceMedia(data.services || []);
       applyBranding(data.branding || {}, data.media || {});
       applySeo(data.seo || {}, data.media || {});
