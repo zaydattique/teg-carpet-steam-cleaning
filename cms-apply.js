@@ -204,7 +204,7 @@
     if (!Array.isArray(entry.texts)) return;
     var selector = 'h1,h2,h3,h4,p,li,button,label,span,a';
     var nodes = Array.from(document.querySelectorAll(selector)).filter(function(node) {
-      if (node.closest('script,style,svg,noscript')) return false;
+      if (node.closest('script,style,svg,noscript,[id^="teg-"],.teg-footer-map,.teg-contact-map-box,.teg-gmb-bar,#teg-related-services,#teg-answer-facts,.ba-section,[data-cms-ba="1"]')) return false;
       return !Array.from(node.querySelectorAll(selector)).length;
     });
     entry.texts.forEach(function(text, i) {
@@ -365,7 +365,9 @@
   function apply(data) {
     if (!data) return;
     try {
-      applyHero(data.media || {});
+      var siteMedia = Object.assign({}, data.media || {});
+      if (data.pageMedia && data.pageMedia['index.html'] && data.pageMedia['index.html'].heroImage) siteMedia.heroImage = data.pageMedia['index.html'].heroImage;
+      applyHero(siteMedia);
       applyPageContent(data.pageContent || {});
       applyPageAssets(data.pageMedia || {});
       applyPageHero(data.pageMedia || {}, data.media || {});
