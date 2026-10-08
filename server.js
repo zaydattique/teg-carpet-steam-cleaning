@@ -192,7 +192,7 @@ app.post('/api/contact', async (req, res) => {
 
   res.json({
     ok: true,
-    message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery failed.'
+    message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery failed.',
     id: entry.id,
     emailSent: !!emailResult.sent,
     emailProvider: emailResult.via || null,
