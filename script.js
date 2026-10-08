@@ -95,9 +95,18 @@ if (form) {
         body: JSON.stringify({ name: name, phone: phone, email: email, service: service, message: message })
       });
       var data = await res.json().catch(function () { return {}; });
-      if (res.ok && data.ok && data.emailSent) {
-        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: true, emailSent: true });
+      if (res.ok && data.ok) {
+        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: true, emailSent: !!data.emailSent });
         btn.textContent = 'Request Sent ✓';
+        var successStatus = form.querySelector('.form-status');
+        if (!successStatus) {
+          successStatus = document.createElement('p');
+          successStatus.className = 'form-status';
+          successStatus.setAttribute('role', 'status');
+          form.appendChild(successStatus);
+        }
+        successStatus.setAttribute('role', 'status');
+        successStatus.textContent = 'Thanks! Your estimate request has been received. We’ll be in touch soon.';
         form.reset();
         setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3500);
         return;
