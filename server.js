@@ -17,8 +17,8 @@ const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS
 if (!process.env.ADMIN_PASSWORD && !process.env.TEG_ADMIN_PASS) {
   console.warn('WARNING: ADMIN_PASSWORD not set — using default. Set ADMIN_PASSWORD env on Hostinger for production.');
 }
-/** Email address that receives every Get-an-Estimate lead (business owner — not the customer). */
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
+/** Email address that receives every Get-an-Estimate lead (FormSubmit / SMTP). */
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'zaidattique321@gmail.com';
 const SMTP_HOST = process.env.SMTP_HOST || '';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
 const SMTP_USER = process.env.SMTP_USER || '';
