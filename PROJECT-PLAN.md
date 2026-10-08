@@ -27,13 +27,13 @@ Full multi-page website + Node backend for T.E.G Carpet & Furniture Steam Cleani
 - admin.html — CMS panel
 
 ## Backend API
-- POST /api/contact — save lead + FormSubmit notify to owner email
+- POST /api/contact — save lead + FormSubmit notify to `NOTIFY_EMAIL`
 - GET/PUT /api/admin/content — CMS
 - GET /api/admin/submissions — inbox
 - POST /api/admin/upload — media
 - Analytics events
 
 ## Deploy notes
-- Set `ADMIN_PASSWORD` and optionally `NOTIFY_EMAIL` on Hostinger
-- FormSubmit sends owner email without SMTP
+- Set `ADMIN_PASSWORD` and optionally `NOTIFY_EMAIL` / `NOTIFY_CC_EMAIL` on Hostinger
+- FormSubmit sends estimate inquiries without SMTP; activate the notification email once
 - Lead always saved to data/submissions.json even if email fails

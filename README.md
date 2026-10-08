@@ -32,19 +32,19 @@ ADMIN_PASSWORD=your-secure-password PORT=3000 npm start
 3. `npm install && npm start` (or let Hostinger handle the start command)
 4. Point the domain to the app
 
-**Important:** Backend must be running for form save + admin. Without the server, the form falls back to `mailto:contact@tegcarpetsteamcleaning.com`.
+**Important:** Backend must be running for form save + admin + email notification. `ADMIN_PASSWORD` is required; there is no hardcoded production password.
 
 ## Contact email (canonical)
 **contact@tegcarpetsteamcleaning.com**
 
 Used in:
 - Form mailto fallback (`script.js`)
-- `content.json` / `data/content.json`
+- `data/content.json`
 - Schema / `site-config.js`
 - Footers and contact pages
 - `llms.txt`
 
-Forms post to `/api/contact` (saved in `data/submissions.json`). No third-party form service (Formspree/FormSubmit) is used on the live frontend.
+Forms post to `/api/contact`; the backend saves every lead to `data/submissions.json` and sends the estimate notification through FormSubmit. The current notification target is `NOTIFY_EMAIL` (default: `zaidattique321@gmail.com`). `NOTIFY_CC_EMAIL` can be set later for the client. FormSubmit requires one-time email activation before delivery.
 
 ## Pages
 | File | Description |
