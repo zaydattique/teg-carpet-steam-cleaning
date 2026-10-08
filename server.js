@@ -138,7 +138,7 @@ async function sendOwnerNotification(entry) {
     '</div>';
 
   const apiKey = (process.env.RESEND_API_KEY || '').trim();
-  const from = (process.env.RESEND_FROM || 'T.E.G Carpet Cleaning <contact@tegcarpetsteamcleaning.com>').trim();
+  const from = 'onboarding@resend.dev';
 
   if (!apiKey) {
     return { sent: false, reason: 'RESEND_API_KEY is not configured' };
