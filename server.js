@@ -13,7 +13,7 @@ const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS
 if (!ADMIN_PASSWORD) {
   throw new Error('ADMIN_PASSWORD environment variable is required. Refusing to start with a hardcoded admin password.');
 }
-/** Email address that receives every Get-an-Estimate lead (FormSubmit / SMTP). */
+/** Email address that receives every Get-an-Estimate lead through FormSubmit. */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'zaidattique321@gmail.com';
 const NOTIFY_CC_EMAIL = (process.env.NOTIFY_CC_EMAIL || '').trim();
 const DATA_DIR = path.join(__dirname, 'data');
@@ -122,7 +122,7 @@ async function sendOwnerNotification(entry) {
   ].join('\n');
   const htmlBody = '<h2>New Get-an-Estimate lead</h2><p><strong>Name:</strong> ' + entry.name + '<br><strong>Phone:</strong> ' + entry.phone + '<br><strong>Email:</strong> ' + entry.email + '<br><strong>Service:</strong> ' + (entry.service || '(not specified)') + '</p><p><strong>Message:</strong><br>' + (entry.message || '(none)').replace(/\n/g, '<br>') + '</p><p style="color:#666;font-size:12px">Submitted: ' + entry.createdAt + ' · Lead ID: ' + entry.id + '</p>';
 
-  // No SMTP needed: FormSubmit delivers to owner email (hardcoded default — no env required)
+  // FormSubmit delivers to the configured owner email; the default is only for this test deployment.
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
       method: 'POST',
