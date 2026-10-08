@@ -23,7 +23,7 @@
     MAP_LINK=query?'https://www.google.com/maps/search/?api=1&query='+query:'';
     MAP_EMBED=address?'https://www.google.com/maps?q='+encodeURIComponent(address)+'&output=embed':'';
     GMB=loc.gmbUrl||loc.mapsUrl||'';
-    GMB_REVIEW=GMB?GMB.replace(/\\/$/,'')+'/review':'';
+    GMB_REVIEW=GMB?(GMB.charAt(GMB.length-1)==='/'?GMB.slice(0,-1):GMB)+'/review':'';
   }
 
   if (!document.getElementById('teg-ui-css')) {
