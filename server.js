@@ -7,11 +7,23 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+let nodemailer = null;
+try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer not installed — email notifications disabled until npm install'); }
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || 'teg2026';
+const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || 'teg2026').trim();
+if (!process.env.ADMIN_PASSWORD && !process.env.TEG_ADMIN_PASS) {
+  console.warn('WARNING: ADMIN_PASSWORD not set — using default. Set ADMIN_PASSWORD env on Hostinger for production.');
+}
+/** Email address that receives every Get-an-Estimate lead (business owner — not the customer). */
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'contact@tegcarpetsteamcleaning.com';
+const SMTP_HOST = process.env.SMTP_HOST || '';
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || NOTIFY_EMAIL;
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
@@ -43,7 +55,7 @@ const DEFAULT_CONTENT = {
   seo: { title: 'T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee', description: 'Professional carpet, couch, tile & steam cleaning services by T.E.G in Milwaukee, WI.', keywords: 'carpet cleaning Milwaukee, steam cleaning Milwaukee', canonical: 'https://tegcarpetfurniturecleaning.com/', ogTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', ogDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', ogImage: '', twitterTitle: 'T.E.G Carpet Steam Cleaning | Milwaukee', twitterDescription: 'Professional carpet & steam cleaning in Milwaukee, WI.', twitterImage: '' },
   media: { heroImage: '', heroVideo: '', heroPoster: '', ogImage: '', aboutImage: '', logo: '', favicon: '' },
   pageMedia: {},
-  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@teg-carpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 — Always Available' },
+  contact: { phone: '+1 (414) 775-3705', phoneTel: '+14147753705', whatsapp: '+1 (618) 434-0858', whatsappDigits: '16184340858', email: 'contact@tegcarpetsteamcleaning.com', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217', addressLine1: '4111 N Port Washington Rd suite 1', city: 'Milwaukee', region: 'WI', postal: '53217', hours: '24/7 — Always Available' },
   location: { name: 'T.E.G Carpet & Furniture Steam Cleaning', city: 'Milwaukee', address: '4111 N Port Washington Rd suite 1, Milwaukee, WI 53217, United States', region: 'WI', postal: '53217', lat: '43.0895', lng: '-87.8910', geoRegion: 'US-WI' },
   nav: { main: [], footer: [], services: [] },
   services: [],
@@ -101,14 +113,95 @@ const upload = multer({
 app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'T.E.G Backend', time: new Date().toISOString() }));
 app.get('/api/content', (_req, res) => res.json(getContent()));
 
-app.post('/api/contact', (req, res) => {
+async function sendOwnerNotification(entry) {
+  const subject = 'New estimate request — ' + entry.name;
+  const textBody = [
+    'New Get-an-Estimate lead',
+    '',
+    'Name: ' + entry.name,
+    'Phone: ' + entry.phone,
+    'Email: ' + entry.email,
+    'Service: ' + (entry.service || '(not specified)'),
+    '',
+    'Message:',
+    entry.message || '(none)',
+    '',
+    'Submitted: ' + entry.createdAt,
+    'Lead ID: ' + entry.id
+  ].join('\n');
+  const htmlBody = '<h2>New Get-an-Estimate lead</h2><p><strong>Name:</strong> ' + entry.name + '<br><strong>Phone:</strong> ' + entry.phone + '<br><strong>Email:</strong> ' + entry.email + '<br><strong>Service:</strong> ' + (entry.service || '(not specified)') + '</p><p><strong>Message:</strong><br>' + (entry.message || '(none)').replace(/\n/g, '<br>') + '</p><p style="color:#666;font-size:12px">Submitted: ' + entry.createdAt + ' · Lead ID: ' + entry.id + '</p>';
+
+  if (SMTP_HOST && SMTP_USER && SMTP_PASS && nodemailer) {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS }
+    });
+    await transporter.sendMail({
+      from: SMTP_FROM,
+      to: NOTIFY_EMAIL,
+      replyTo: entry.email,
+      subject,
+      text: textBody,
+      html: htmlBody
+    });
+    return { sent: true, to: NOTIFY_EMAIL, via: 'smtp' };
+  }
+
+  // No SMTP needed: FormSubmit delivers to owner email
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        name: entry.name,
+        email: entry.email,
+        phone: entry.phone,
+        service: entry.service || '',
+        message: entry.message || '',
+        _subject: subject,
+        _template: 'table',
+        _captcha: 'false'
+      })
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + errText.slice(0, 120) };
+    }
+    return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit' };
+  } catch (e) {
+    return { sent: false, reason: e.message || 'FormSubmit failed' };
+  }
+}
+
+app.post('/api/contact', async (req, res) => {
   const { name, phone, email, service, message } = req.body || {};
   if (!name || !phone || !email) return res.status(400).json({ ok: false, error: 'Name, phone and email are required.' });
-  const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name: String(name).trim(), phone: String(phone).trim(), email: String(email).trim(), service: String(service || '').trim(), message: String(message || '').trim(), createdAt: new Date().toISOString(), read: false };
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    name: String(name).trim(),
+    phone: String(phone).trim(),
+    email: String(email).trim(),
+    service: String(service || '').trim(),
+    message: String(message || '').trim(),
+    createdAt: new Date().toISOString(),
+    read: false
+  };
   const list = readJSON(SUBMISSIONS_FILE, []);
   list.unshift(entry);
   writeJSON(SUBMISSIONS_FILE, list);
-  res.json({ ok: true, message: 'Quote request received.', id: entry.id });
+
+  let emailResult = { sent: false };
+  try {
+    emailResult = await sendOwnerNotification(entry);
+    if (emailResult.sent) console.log('Owner notify email sent to', emailResult.to, 'for lead', entry.id);
+    else console.warn('Owner notify email skipped:', emailResult.reason);
+  } catch (err) {
+    console.error('Owner notify email failed:', err.message);
+  }
+
+  res.json({ ok: true, message: 'Quote request received.', id: entry.id, emailSent: !!emailResult.sent });
 });
 
 app.post('/api/analytics/event', (req, res) => {
@@ -216,4 +309,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: use ADMIN_PASSWORD environment variable');
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS));
 });
