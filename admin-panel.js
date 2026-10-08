@@ -144,9 +144,8 @@ async function load() {
     fill(data);
     showToast('Content loaded ✓', true);
   }
-  document.getElementById('connStatus').textContent = serverMode
-    ? 'Connected — media preserved on save'
-    : 'Local only';
+  const connStatus = document.getElementById('connStatus');
+  if (connStatus) connStatus.textContent = serverMode ? 'Connected' : 'Local only';
 }
 function fill(d) {
   const b = d.branding || {}, m = d.media || {}, c = d.contact || {}, s = d.seo || {}, loc = d.location || {};
