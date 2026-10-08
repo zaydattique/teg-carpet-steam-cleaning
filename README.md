@@ -2,12 +2,15 @@
 
 Premium multi-page site for **T.E.G Carpet & Furniture Steam Cleaning** (Milwaukee, WI) with a **Node.js backend**.
 
+**Live:** https://tegcarpetfurniturecleaning.com
+
 ## Backend features
 - **POST /api/contact** — quote form saves to `data/submissions.json`
 - **GET/PUT /api/admin/content** — SEO, media, services, location, contact
 - **GET /api/admin/submissions** — view quote requests in admin
-- **POST /api/admin/upload** — real file upload to `/uploads`
+- **POST /api/admin/upload** — file upload to `/uploads`
 - Serves all static HTML/CSS/JS
+- Analytics event tracking
 
 ## Run locally
 ```bash
@@ -17,18 +20,31 @@ npm start
 Open: **http://localhost:3000**
 
 Admin: **http://localhost:3000/admin.html**  
-Password: **teg2026** (or set `ADMIN_PASSWORD` env)
+Set the admin password via environment variable (required for production):
 
 ```bash
-ADMIN_PASSWORD=yourpass PORT=3000 npm start
+ADMIN_PASSWORD=your-secure-password PORT=3000 npm start
 ```
 
-## Deploy
-1. Upload project to a VPS / Railway / Render / any Node host
-2. `npm install && npm start`
-3. Point domain to the server port (or reverse proxy with Nginx)
+## Deploy (Hostinger / Node)
+1. Connect the GitHub repo in Hostinger (or upload files)
+2. Set `ADMIN_PASSWORD` in the hosting environment / Node app settings
+3. `npm install && npm start` (or let Hostinger handle the start command)
+4. Point the domain to the app
 
-**Important:** Backend must be running for form save + admin server save. Without server, form falls back to mailto.
+**Important:** Backend must be running for form save + admin. Without the server, the form falls back to `mailto:contact@teg-carpetsteamcleaning.com`.
+
+## Contact email (canonical)
+**contact@teg-carpetsteamcleaning.com**
+
+Used in:
+- Form mailto fallback (`script.js`)
+- `content.json` / `data/content.json`
+- Schema / `site-config.js`
+- Footers and contact pages
+- `llms.txt`
+
+Forms post to `/api/contact` (saved in `data/submissions.json`). No third-party form service (Formspree/FormSubmit) is used on the live frontend.
 
 ## Pages
 | File | Description |
@@ -36,7 +52,7 @@ ADMIN_PASSWORD=yourpass PORT=3000 npm start
 | `index.html` | Homepage |
 | `services.html` | All services |
 | `service-*.html` | Individual service detail pages |
-| `about.html` / `contact.html` / `areas.html` | Inner pages |
+| `about.html` / `contact.html` / `areas.html` / `faq.html` / `reviews.html` | Inner pages |
 | `admin.html` | Admin panel |
 
 ## API summary
@@ -49,6 +65,7 @@ ADMIN_PASSWORD=yourpass PORT=3000 npm start
 | GET/PUT | `/api/admin/content` | header `x-admin-key` |
 | GET | `/api/admin/submissions` | header `x-admin-key` |
 | POST | `/api/admin/upload` | header `x-admin-key` + multipart file |
+| GET | `/api/admin/analytics` | header `x-admin-key` |
 
 ## Business
 - Phone: +1 (414) 775-3705
