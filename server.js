@@ -119,7 +119,7 @@ async function sendOwnerNotification(entry) {
     '',
     'Submitted: ' + entry.createdAt,
     'Lead ID: ' + entry.id
-  ].join('\\n');
+  ].join('\n');
 
   const esc = (value) => String(value || '')
     .replace(/&/g, '&amp;')
@@ -133,59 +133,52 @@ async function sendOwnerNotification(entry) {
     '<br><strong>Phone:</strong> ' + esc(entry.phone) +
     '<br><strong>Email:</strong> ' + esc(entry.email) +
     '<br><strong>Service:</strong> ' + esc(entry.service || '(not specified)') + '</p>' +
-    '<p><strong>Details:</strong><br>' + esc(entry.message || '(none)').replace(/\\n/g, '<br>') + '</p>' +
+    '<p><strong>Details:</strong><br>' + esc(entry.message || '(none)').replace(/\n/g, '<br>') + '</p>' +
     '<p style="color:#666;font-size:12px">Submitted: ' + esc(entry.createdAt) + ' · Lead ID: ' + esc(entry.id) + '</p>' +
     '</div>';
-
-  const apiKey = (process.env.RESEND_API_KEY || '').trim();
-  const from = 'onboarding@resend.dev';
-
-  if (!apiKey) {
-    return { sent: false, reason: 'RESEND_API_KEY is not configured' };
-  }
 
   try {
     const recipients = [NOTIFY_EMAIL]
       .concat(NOTIFY_CC_EMAIL ? NOTIFY_CC_EMAIL.split(',').map((email) => email.trim()).filter(Boolean) : []);
-
-    const res = await fetch('https://api.resend.com/emails', {
+    const payload = {
+      name: entry.name,
+      phone: entry.phone,
+      email: entry.email,
+      service: entry.service || '(not specified)',
+      message: entry.message || '(none)',
+      submitted: entry.createdAt,
+      lead_id: entry.id,
+      _replyto: entry.email,
+      _subject: subject,
+      _template: 'table',
+      _captcha: 'false',
+      _url: 'https://tegcarpetfurniturecleaning.com/contact.html',
+      ...(NOTIFY_CC_EMAIL ? { _cc: NOTIFY_CC_EMAIL } : {})
+    };
+    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
       method: 'POST',
       headers: {
-        Authorization: 'Bearer ' + apiKey,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        from,
-        to: recipients,
-        reply_to: entry.email,
-        subject,
-        text: textBody,
-        html: htmlBody
-      })
+      body: JSON.stringify(payload)
     });
-
     const raw = await res.text().catch(() => '');
     let data = {};
     try { data = JSON.parse(raw); } catch (_) {}
 
     if (!res.ok) {
-      return {
-        sent: false,
-        reason: 'Resend HTTP ' + res.status + (data.message ? ': ' + data.message : '')
-      };
+      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + raw.slice(0, 160) };
     }
-
-    if (!data.id) {
-      return { sent: false, reason: 'Resend did not return an email ID' };
+    if (data && (data.success === false || data.success === 'false')) {
+      return { sent: false, reason: data.message || 'FormSubmit rejected the submission' };
     }
-
-    console.log('Resend accepted notification for', recipients.join(', '), '| email id:', data.id);
-    return { sent: true, to: recipients.join(', '), via: 'resend', resendId: data.id };
+    console.log('FormSubmit accepted notification for', recipients.join(', '), '| status:', res.status, '| response:', raw.slice(0, 200));
+    return { sent: true, to: recipients.join(', '), via: 'formsubmit' };
   } catch (e) {
-    return { sent: false, reason: e.message || 'Resend request failed' };
+    return { sent: false, reason: e.message || 'FormSubmit failed' };
   }
 }
-
 app.post('/api/contact', async (req, res) => {
   const { name, phone, email, service, message } = req.body || {};
   if (!name || !phone || !email) return res.status(400).json({ ok: false, error: 'Name, phone and email are required.' });
