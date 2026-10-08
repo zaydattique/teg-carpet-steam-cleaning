@@ -30,7 +30,7 @@ ADMIN_PASSWORD=your-secure-password PORT=3000 npm start
 1. Connect the GitHub repo in Hostinger (or upload files)
 2. Set `ADMIN_PASSWORD` in the hosting environment / Node app settings
 3. `npm install && npm start` (or let Hostinger handle the start command)
-4. Configure the FormSubmit notification email below
+4. Configure `NOTIFY_EMAIL=contact@tegcarpetsteamcleaning.com` in Hostinger and activate the address with FormSubmit if prompted
 5. Point the domain to the app
 
 **Important:** Backend must be running for form save + admin + email notification. `ADMIN_PASSWORD` is required; there is no hardcoded production password.
@@ -41,7 +41,7 @@ Estimate notifications are sent server-side through FormSubmit. Resend is not us
 Set these environment variables in Hostinger / production:
 ```bash
 ADMIN_PASSWORD=your-secure-password
-NOTIFY_EMAIL=zaidattique321@gmail.com
+NOTIFY_EMAIL=contact@tegcarpetsteamcleaning.com
 # Optional: comma-separated additional recipients
 NOTIFY_CC_EMAIL=
 ```
@@ -58,7 +58,7 @@ Used in:
 - Footers and contact pages
 - `llms.txt`
 
-Forms post to `/api/contact`; the backend saves every lead to `data/submissions.json` and sends the estimate notification through FormSubmit. The current notification target is `NOTIFY_EMAIL` (default: `zaidattique321@gmail.com`). `NOTIFY_CC_EMAIL` can be set later for the client.
+Forms post to `/api/contact`; the backend saves every lead to `data/submissions.json` and sends the estimate notification through FormSubmit. The notification target is `NOTIFY_EMAIL` (default: `contact@tegcarpetsteamcleaning.com`). If Hostinger already has `NOTIFY_EMAIL` set to another address, update that environment variable to `contact@tegcarpetsteamcleaning.com` and restart/redeploy the app.
 
 ## Pages
 | File | Description |
