@@ -4,7 +4,7 @@
     "logoMark": "T.E.G",
     "logoText": "Carpet & Furniture Steam Cleaning",
     "logoUrl": "",
-    "faviconUrl": ""
+    "faviconUrl": "/favicon.svg"
   },
   "seo": {
     "title": "T.E.G Carpet Steam Cleaning | Professional Carpet & Furniture Cleaning in Milwaukee",
@@ -25,7 +25,7 @@
     "ogImage": "",
     "aboutImage": "",
     "logo": "",
-    "favicon": ""
+    "favicon": "/favicon.svg"
   },
   "pageMedia": {
     "services.html": {
