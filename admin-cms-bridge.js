@@ -35,8 +35,8 @@
     setValue('contact-hours', c.hours); setValue('contact-sms', c.sms || c.phoneTel || c.phone);
     setValue('seo-title', s.title); setValue('seo-description', s.description); setValue('seo-keywords', s.keywords);
     setValue('seo-ogTitle', s.ogTitle); setValue('seo-ogDescription', s.ogDescription);
-    setValue('seo-ogImage', s.ogImage || m.ogImage); setValue('seo-twitterTitle', s.twitterTitle);
-    setValue('seo-twitterDescription', s.twitterDescription);
+    setValue('seo-ogImage', s.ogImage || m.ogImage); setValue('seo-canonical', s.canonical); setValue('seo-twitterTitle', s.twitterTitle);
+    setValue('seo-twitterDescription', s.twitterDescription); setValue('seo-twitterImage', s.twitterImage || s.ogImage || m.ogImage);
     setValue('loc-name', loc.name || b.siteName); setValue('loc-address', loc.address || c.address);
     setValue('loc-city', loc.city || c.city); setValue('loc-region', loc.region || c.region);
     setValue('loc-postal', loc.postal || c.postal); setValue('loc-geoRegion', loc.geoRegion);
@@ -158,6 +158,15 @@
     var box=el('pageHeroesList'); if(!box)return;
     box.innerHTML='<div class="form-group"><label>Choose page</label><select id="mediaPageSelect">'+PAGE_FILES.map(function(p){return '<option value="'+p+'" '+(p===activeMediaPage?'selected':'')+'>'+p+'</option>';}).join('')+'</select></div><div id="mediaPageSlots"><p>Loading page media…</p></div>';
     el('mediaPageSelect').addEventListener('change',function(){activeMediaPage=this.value;renderPageMediaSlots();});
+    var d=current(); d.pageMedia=d.pageMedia||{};
+    await Promise.all(PAGE_FILES.map(async function(file){
+      var found=await scanPage(file), old=d.pageMedia[file]||{};
+      d.pageMedia[file]=Object.assign({},old);
+      if(!Array.isArray(old.images))d.pageMedia[file].images=found.images.map(function(i){return i.src;});
+      if(!Array.isArray(old.videos))d.pageMedia[file].videos=found.videos.map(function(v){return v.src;});
+      if(!Array.isArray(old.videoPosters))d.pageMedia[file].videoPosters=found.videos.map(function(v){return v.poster;});
+    }));
+    window.__TEG_ADMIN_DATA=d;
     await renderPageMediaSlots();
   };
   async function renderPageMediaSlots() {
@@ -204,7 +213,7 @@
     d.media=Object.assign({},m,{logo:value('brand-logo')||m.logo||'',favicon:m.favicon||b.faviconUrl||'',ogImage:value('seo-ogImage')||m.ogImage||''});
     d.branding.logoUrl=d.media.logo; d.branding.faviconUrl=d.media.favicon;
     d.contact=Object.assign({},c,{phone:value('contact-phone')||c.phone||'',phoneTel:value('contact-phoneTel')||c.phoneTel||'',email:value('contact-email')||c.email||'',addressLine1:value('contact-street')||c.addressLine1||'',address:[value('contact-street')||c.addressLine1||'',value('contact-city')||c.city||'',value('contact-state')||c.region||'',value('contact-zip')||c.postal||''].filter(Boolean).join(', '),city:value('contact-city')||c.city||'',region:value('contact-state')||c.region||'',postal:value('contact-zip')||c.postal||'',hours:value('contact-hours')||c.hours||'',sms:value('contact-sms')||c.sms||''});
-    d.seo=Object.assign({},s,{title:value('seo-title')||s.title||'',description:value('seo-description')||s.description||'',keywords:value('seo-keywords')||s.keywords||'',ogTitle:value('seo-ogTitle')||s.ogTitle||'',ogDescription:value('seo-ogDescription')||s.ogDescription||'',ogImage:value('seo-ogImage')||m.ogImage||'',twitterTitle:value('seo-twitterTitle')||s.twitterTitle||'',twitterDescription:value('seo-twitterDescription')||s.twitterDescription||'',twitterImage:value('seo-ogImage')||s.twitterImage||m.ogImage||''});
+    d.seo=Object.assign({},s,{title:value('seo-title')||s.title||'',description:value('seo-description')||s.description||'',keywords:value('seo-keywords')||s.keywords||'',ogTitle:value('seo-ogTitle')||s.ogTitle||'',ogDescription:value('seo-ogDescription')||s.ogDescription||'',ogImage:value('seo-ogImage')||m.ogImage||'',canonical:value('seo-canonical')||s.canonical||'',twitterTitle:value('seo-twitterTitle')||s.twitterTitle||'',twitterDescription:value('seo-twitterDescription')||s.twitterDescription||'',twitterImage:value('seo-twitterImage')||value('seo-ogImage')||s.twitterImage||m.ogImage||''});
     d.location=Object.assign({},loc,{name:value('loc-name')||loc.name||'',address:value('loc-address')||d.contact.address||'',city:value('loc-city')||d.contact.city||'',region:value('loc-region')||d.contact.region||'',postal:value('loc-postal')||d.contact.postal||'',geoRegion:value('loc-geoRegion')||loc.geoRegion||'',lat:value('loc-lat')||loc.lat||'',lng:value('loc-lng')||loc.lng||'',gmbUrl:value('loc-gmb')||loc.gmbUrl||''});
     if(el('servicesList')&&typeof collectServices==='function')d.services=collectServices();
     if(typeof collectNav==='function')d.nav={main:collectNav('main'),footer:collectNav('footer'),services:collectNav('services')};
