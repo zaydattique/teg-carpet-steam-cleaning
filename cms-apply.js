@@ -198,6 +198,21 @@
     }
   }
 
+  function applyPageContent(pageContent) {
+    var path = pathName();
+    var entry = (pageContent || {})[path] || {};
+    if (!Array.isArray(entry.texts)) return;
+    var selector = 'h1,h2,h3,h4,p,li,button,label,span,a';
+    var nodes = Array.from(document.querySelectorAll(selector)).filter(function(node) {
+      if (node.closest('script,style,svg,noscript')) return false;
+      return !Array.from(node.querySelectorAll(selector)).length;
+    });
+    entry.texts.forEach(function(text, i) {
+      if (i >= nodes.length || typeof text !== 'string') return;
+      nodes[i].textContent = text;
+    });
+  }
+
   function applyPageAssets(pageMedia) {
     var path = pathName();
     var entry = (pageMedia || {})[path] || {};
@@ -351,6 +366,7 @@
     if (!data) return;
     try {
       applyHero(data.media || {});
+      applyPageContent(data.pageContent || {});
       applyPageAssets(data.pageMedia || {});
       applyPageHero(data.pageMedia || {}, data.media || {});
       applyContact(data.contact || {}, data.location || {});
