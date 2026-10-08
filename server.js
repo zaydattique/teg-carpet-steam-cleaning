@@ -172,10 +172,13 @@ async function sendOwnerNotification(entry) {
     if (!res.ok) {
       return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + raw.slice(0, 160) };
     }
-    if (data && data.success === false) {
-      return { sent: false, reason: data.message || raw.slice(0, 160) || 'FormSubmit rejected' };
+    // FormSubmit's AJAX API should explicitly confirm success. A 200 alone
+    // is not proof that the email was accepted for delivery.
+    const confirmed = data && (data.success === true || data.success === 'true');
+    if (!confirmed) {
+      return { sent: false, reason: (data && data.message) || raw.slice(0, 160) || 'FormSubmit did not confirm delivery' };
     }
-    console.log('FormSubmit response:', raw.slice(0, 200));
+    console.log('FormSubmit accepted notification for', NOTIFY_EMAIL, '| response:', raw.slice(0, 200));
     return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit', formsubmit: data };
   } catch (e) {
     return { sent: false, reason: e.message || 'FormSubmit failed' };

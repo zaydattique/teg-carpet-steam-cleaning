@@ -104,11 +104,19 @@ if (form) {
         body: JSON.stringify({ name: name, phone: phone, email: email, service: service, message: message })
       });
       var data = await res.json().catch(function () { return {}; });
-      if (res.ok && data.ok) {
-        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: true });
-        btn.textContent = 'Request Received ✓';
+      if (res.ok && data.ok && data.emailSent) {
+        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: true, emailSent: true });
+        btn.textContent = 'Request Sent ✓';
         form.reset();
         setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 3500);
+        return;
+      }
+      if (res.ok && data.ok && data.emailSent === false) {
+        if (window.TEG_TRACK) window.TEG_TRACK('form_submit', { form: 'quoteForm', ok: false, emailSent: false });
+        btn.textContent = 'Saved, email failed';
+        btn.disabled = false;
+        setTimeout(function () { btn.textContent = original; }, 4500);
+        alert('Your request was saved, but the email notification could not be confirmed. Please call us directly to make sure we receive it.');
         return;
       }
       throw new Error(data.error || 'Server error');
