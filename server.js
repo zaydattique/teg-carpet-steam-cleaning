@@ -217,8 +217,7 @@ app.post('/api/contact', async (req, res) => {
     message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery failed.',
     id: entry.id,
     emailSent: !!emailResult.sent,
-    emailProvider: emailResult.via || null,
-    emailError: emailResult.sent ? null : (emailResult.reason || 'Email notification failed')
+    emailProvider: emailResult.via || null
   });
 });
 
