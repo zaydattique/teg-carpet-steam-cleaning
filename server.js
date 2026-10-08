@@ -6,9 +6,6 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-let nodemailer = null;
-try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer not installed — email notifications disabled until npm install'); }
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
@@ -18,11 +15,6 @@ if (!ADMIN_PASSWORD) {
 }
 /** Email address that receives every Get-an-Estimate lead (FormSubmit / SMTP). */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'zaidattique321@gmail.com';
-const SMTP_HOST = process.env.SMTP_HOST || '';
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
-const SMTP_USER = process.env.SMTP_USER || '';
-const SMTP_PASS = process.env.SMTP_PASS || '';
-const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || NOTIFY_EMAIL;
 const NOTIFY_CC_EMAIL = (process.env.NOTIFY_CC_EMAIL || '').trim();
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -129,24 +121,6 @@ async function sendOwnerNotification(entry) {
     'Lead ID: ' + entry.id
   ].join('\n');
   const htmlBody = '<h2>New Get-an-Estimate lead</h2><p><strong>Name:</strong> ' + entry.name + '<br><strong>Phone:</strong> ' + entry.phone + '<br><strong>Email:</strong> ' + entry.email + '<br><strong>Service:</strong> ' + (entry.service || '(not specified)') + '</p><p><strong>Message:</strong><br>' + (entry.message || '(none)').replace(/\n/g, '<br>') + '</p><p style="color:#666;font-size:12px">Submitted: ' + entry.createdAt + ' · Lead ID: ' + entry.id + '</p>';
-
-  if (SMTP_HOST && SMTP_USER && SMTP_PASS && nodemailer) {
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: { user: SMTP_USER, pass: SMTP_PASS }
-    });
-    await transporter.sendMail({
-      from: SMTP_FROM,
-      to: NOTIFY_EMAIL,
-      replyTo: entry.email,
-      subject,
-      text: textBody,
-      html: htmlBody
-    });
-    return { sent: true, to: NOTIFY_EMAIL, via: 'smtp' };
-  }
 
   // No SMTP needed: FormSubmit delivers to owner email (hardcoded default — no env required)
   try {
@@ -326,5 +300,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: use ADMIN_PASSWORD environment variable');
-  console.log('Owner notify email:', NOTIFY_EMAIL, '| SMTP configured:', !!(SMTP_HOST && SMTP_USER && SMTP_PASS));
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| provider: FormSubmit');
 });
