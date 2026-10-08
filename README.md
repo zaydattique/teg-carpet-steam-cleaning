@@ -32,10 +32,10 @@ ADMIN_PASSWORD=your-secure-password PORT=3000 npm start
 3. `npm install && npm start` (or let Hostinger handle the start command)
 4. Point the domain to the app
 
-**Important:** Backend must be running for form save + admin. Without the server, the form falls back to `mailto:contact@teg-carpetsteamcleaning.com`.
+**Important:** Backend must be running for form save + admin. Without the server, the form falls back to `mailto:contact@tegcarpetsteamcleaning.com`.
 
 ## Contact email (canonical)
-**contact@teg-carpetsteamcleaning.com**
+**contact@tegcarpetsteamcleaning.com**
 
 Used in:
 - Form mailto fallback (`script.js`)
@@ -70,5 +70,5 @@ Forms post to `/api/contact` (saved in `data/submissions.json`). No third-party 
 ## Business
 - Phone: +1 (414) 775-3705
 - WhatsApp: +1 (618) 434-0858
-- Email: contact@teg-carpetsteamcleaning.com
+- Email: contact@tegcarpetsteamcleaning.com
 - Address: 4111 N Port Washington Rd suite 1, Milwaukee, WI 53217
