@@ -28,12 +28,45 @@
     "favicon": ""
   },
   "pageMedia": {
-    "services.html": { "heroImage": "" },
-    "areas.html": { "heroImage": "" },
-    "about.html": { "heroImage": "" },
-    "faq.html": { "heroImage": "" },
-    "contact.html": { "heroImage": "" },
-    "reviews.html": { "heroImage": "" }
+    "services.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "areas.html": {
+      "heroImage": ""
+    },
+    "about.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "faq.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "contact.html": {
+      "heroImage": "",
+      "images": [],
+      "videos": [],
+      "videoPosters": []
+    },
+    "reviews.html": {
+      "heroImage": ""
+    },
+    "index.html": {
+      "images": [],
+      "videos": [
+        ""
+      ],
+      "videoPosters": [
+        ""
+      ]
+    }
   },
   "contact": {
     "phone": "+1 (414) 775-3705",
@@ -60,30 +93,90 @@
   },
   "nav": {
     "main": [
-      { "label": "Home", "href": "index.html" },
-      { "label": "Services", "href": "services.html" },
-      { "label": "Areas We Serve", "href": "areas.html" },
-      { "label": "About", "href": "about.html" },
-      { "label": "FAQ", "href": "faq.html" },
-      { "label": "Reviews", "href": "reviews.html" },
-      { "label": "Contact", "href": "contact.html" }
+      {
+        "label": "Home",
+        "href": "index.html"
+      },
+      {
+        "label": "Services",
+        "href": "services.html"
+      },
+      {
+        "label": "Areas We Serve",
+        "href": "areas.html"
+      },
+      {
+        "label": "About",
+        "href": "about.html"
+      },
+      {
+        "label": "FAQ",
+        "href": "faq.html"
+      },
+      {
+        "label": "Reviews",
+        "href": "reviews.html"
+      },
+      {
+        "label": "Contact",
+        "href": "contact.html"
+      }
     ],
     "footer": [
-      { "label": "Home", "href": "index.html" },
-      { "label": "Services", "href": "services.html" },
-      { "label": "Areas We Serve", "href": "areas.html" },
-      { "label": "About", "href": "about.html" },
-      { "label": "FAQ", "href": "faq.html" },
-      { "label": "Reviews", "href": "reviews.html" },
-      { "label": "Contact", "href": "contact.html" }
+      {
+        "label": "Home",
+        "href": "index.html"
+      },
+      {
+        "label": "Services",
+        "href": "services.html"
+      },
+      {
+        "label": "Areas We Serve",
+        "href": "areas.html"
+      },
+      {
+        "label": "About",
+        "href": "about.html"
+      },
+      {
+        "label": "FAQ",
+        "href": "faq.html"
+      },
+      {
+        "label": "Reviews",
+        "href": "reviews.html"
+      },
+      {
+        "label": "Contact",
+        "href": "contact.html"
+      }
     ],
     "services": [
-      { "label": "Carpet Cleaning", "href": "service-carpet-cleaning.html" },
-      { "label": "Tile & Grout", "href": "service-tile-grout.html" },
-      { "label": "Upholstery", "href": "service-couch-cleaning.html" },
-      { "label": "Steam Cleaning", "href": "service-steam-cleaning.html" },
-      { "label": "Pet Odor & Stain", "href": "service-stain-removal.html" },
-      { "label": "Commercial", "href": "service-commercial.html" }
+      {
+        "label": "Carpet Cleaning",
+        "href": "service-carpet-cleaning.html"
+      },
+      {
+        "label": "Tile & Grout",
+        "href": "service-tile-grout.html"
+      },
+      {
+        "label": "Upholstery",
+        "href": "service-couch-cleaning.html"
+      },
+      {
+        "label": "Steam Cleaning",
+        "href": "service-steam-cleaning.html"
+      },
+      {
+        "label": "Pet Odor & Stain",
+        "href": "service-stain-removal.html"
+      },
+      {
+        "label": "Commercial",
+        "href": "service-commercial.html"
+      }
     ]
   },
   "services": [
