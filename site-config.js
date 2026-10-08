@@ -35,13 +35,12 @@
         'description': 'Professional carpet cleaning, steam cleaning, tile and grout, upholstery, area rugs, pet odor and stain removal, commercial carpet cleaning, water damage restoration, carpet stretching, and hardwood floor cleaning in Milwaukee, WI and western suburbs. Upfront pricing, kid and pet safe, licensed and insured, available 24/7.',
         'url': 'https://tegcarpetfurniturecleaning.com/',
         'telephone': '+1-414-775-3705',
-        'email': 'contact@teg-carpetsteamcleaning.com',
+        'email': 'contact@tegcarpetsteamcleaning.com',
         'image': 'https://tegcarpetfurniturecleaning.com/favicon.svg',
         'priceRange': '$$',
         'address': { '@type': 'PostalAddress', 'streetAddress': '4111 N Port Washington Rd suite 1', 'addressLocality': 'Milwaukee', 'addressRegion': 'WI', 'postalCode': '53217', 'addressCountry': 'US' },
         'geo': { '@type': 'GeoCoordinates', 'latitude': 43.0895, 'longitude': -87.8910 },
         'openingHoursSpecification': { '@type': 'OpeningHoursSpecification', 'dayOfWeek': ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], 'opens': '00:00', 'closes': '23:59' },
-        'aggregateRating': { '@type': 'AggregateRating', 'ratingValue': '5.0', 'reviewCount': '32', 'bestRating': '5', 'worstRating': '1' },
         'knowsAbout': ['carpet cleaning','steam cleaning','tile and grout cleaning','upholstery cleaning','area rug cleaning','pet odor removal','stain removal','commercial carpet cleaning','hot water extraction','water damage restoration','carpet stretching','hardwood floor cleaning'],
         'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI'],
         'sameAs': ['https://g.page/teg-carpet-steam-cleaning'],
@@ -174,68 +173,18 @@
     if (block && block.parentNode) block.parentNode.insertBefore(el, block);
   }
 
-  function injectAreaDepth() {
-    var path = (location.pathname || '').split('/').pop() || '';
-    var m = path.match(/^area-(.+)\.html$/i);
-    if (!m || document.getElementById('teg-area-depth')) return;
-    var map = {'milwaukee':'Milwaukee','wauwatosa':'Wauwatosa','brookfield':'Brookfield','new-berlin':'New Berlin','west-allis':'West Allis','greenfield':'Greenfield','franklin':'Franklin','muskego':'Muskego','pewaukee':'Pewaukee','oak-creek':'Oak Creek','elm-grove':'Elm Grove','hales-corners':'Hales Corners','greendale':'Greendale'};
-    var city = map[m[1].toLowerCase()];
-    if (!city) return;
-    var services = [['service-carpet-cleaning.html','Carpet Cleaning'],['service-tile-grout.html','Tile & Grout'],['service-couch-cleaning.html','Upholstery'],['service-area-rug.html','Area Rugs'],['service-stain-removal.html','Pet Odor & Stain'],['service-steam-cleaning.html','Steam Cleaning'],['service-commercial.html','Commercial'],['service-water-damage.html','Water Damage'],['service-carpet-stretching.html','Carpet Stretching'],['service-hardwood.html','Hardwood Floors']];
-    var chips = services.map(function(s){ return '<a class="area-chip" href="'+s[0]+'">'+s[1]+' in '+city+'</a>'; }).join('');
-    var box = document.createElement('section');
-    box.id = 'teg-area-depth';
-    box.className = 'section';
-    box.innerHTML = '<div class="container" style="max-width:800px"><p class="section-eyebrow">Local guide</p><h2 class="section-title">Carpet cleaning in '+city+': what to expect</h2><p>T.E.G serves '+city+' on our regular Milwaukee-metro route with upfront pricing, hot water extraction for carpet, and the same crew for tile, upholstery, rugs, pet odor, commercial, water extraction, stretching, and hardwood when you need them.</p><p>Call <a href="tel:+14147753705">+1 (414) 775-3705</a> 24/7 or <a href="contact.html">request an estimate</a>. Price is agreed before we start. Most carpet dries in about 4–8 hours. Kid- and pet-safe products are standard once dry.</p><p>See the full process on <a href="how-it-works.html">how it works</a> and answers on the <a href="faq.html">FAQ</a>.</p><div class="home-areas-chips" style="margin-top:18px">'+chips+'</div></div>';
-    var cta = document.querySelector('section.cta-banner');
-    if (cta && cta.parentNode) cta.parentNode.insertBefore(box, cta);
-    else { var main = document.querySelector('main') || document.body; main.appendChild(box); }
-  }
-
   function forceUI() {
-    document.querySelectorAll('a[href^="tel:"], a.phone-link, a.phone-shake').forEach(function (a) {
-      if (a.closest && (a.closest('.sms-float') || a.closest('.whatsapp-float'))) return;
-      a.setAttribute('href', 'tel:+14147753705');
-      var t = (a.textContent || '').trim();
-      if (t.indexOf('414') !== -1 || t.indexOf('Call') === 0 || /^\+?[\d\s().-]{7,}$/.test(t) || t === 'Call Now') a.textContent = 'Call Now';
-      if (a.classList.contains('btn')) { a.classList.remove('btn-primary'); a.classList.add('phone-shake'); }
-    });
-    document.querySelectorAll('a.whatsapp-float').forEach(function (a) { a.remove(); });
-    document.querySelectorAll('a.btn, button.btn, h3').forEach(function (el) {
-      var t = el.textContent || '';
-      if (/Get a Free Quote/i.test(t)) el.textContent = t.replace(/Get a Free Quote/ig, 'Get a Free Estimate');
-      else if (/Get a Quote/i.test(t)) el.textContent = t.replace(/Get a Quote/ig, 'Get an Estimate');
-      else if (/Request a Quote/i.test(t)) el.textContent = t.replace(/Request a Quote/ig, 'Request an Estimate');
-      else if (/Get My Quote/i.test(t)) el.textContent = t.replace(/Get My Quote/ig, 'Get My Estimate');
-    });
-    document.querySelectorAll('.stat').forEach(function (el) {
-      var s = el.querySelector('strong');
-      if (s && /Mon/i.test(s.textContent || '')) { s.textContent = '24/7'; var sp = el.querySelector('span'); if (sp) sp.textContent = 'Always open'; }
-    });
-    document.querySelectorAll('.logo-text').forEach(function (el) {
-      if ((el.textContent || '').indexOf('Furniture') === -1) el.textContent = 'Carpet & Furniture Steam Cleaning';
-    });
-    ensureReviewsNav();
-    localizeAreaServiceTitles();
-    injectGmbUi();
     injectFooterMap();
     injectContactMapBox();
+    injectGmbUi();
+    ensureReviewsNav();
+    localizeAreaServiceTitles();
     injectRelatedServices();
     injectAnswerFacts();
-    injectAreaDepth();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceUI);
   else forceUI();
-  setTimeout(forceUI, 400);
-  setTimeout(forceUI, 1200);
-
-  if (!document.querySelector('script[src*="cms-apply"]')) {
-    var cms = document.createElement('script');
-    cms.src = 'cms-apply.js';
-    cms.defer = true;
-    (document.body || document.documentElement).appendChild(cms);
-  }
 
   window.TEG_SITE = { forceUI: forceUI, AEO_ENABLED: AEO_ENABLED };
 })();
