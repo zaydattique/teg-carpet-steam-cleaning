@@ -19,9 +19,9 @@
     var payload = {
       event: event,
       props: props || {},
-      path: location.pathname + location.search,
+      path: location.pathname,
       title: document.title || '',
-      referrer: document.referrer || '',
+      referrer: (function(){try{return document.referrer ? new URL(document.referrer).origin : '';}catch(e){return '';}})(),
       sid: sid,
       ts: new Date().toISOString(),
       ua: (navigator.userAgent || '').slice(0, 180),
@@ -113,7 +113,7 @@
     var f = e.target;
     if (!f || !f.id) return;
     if (f.id === 'quoteForm' || /contact|quote|estimate/i.test(f.id)) {
-      track('form_submit', { form: f.id || 'form' });
+      track('form_attempt', { form: f.id || 'form' });
     }
   }, true);
 })();
