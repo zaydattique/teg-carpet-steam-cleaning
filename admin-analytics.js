@@ -21,7 +21,7 @@
     panel.id = 'panel-analytics';
     panel.innerHTML =
       '<h2>Analytics — Traffic & Conversions</h2>' +
-      '<p style="font-size:13px;color:#64748b;margin-bottom:16px">Tracks Call Now, GMB profile, SMS, estimate CTAs, page views on the live site.</p>' +
+      '' +
       '<div class="form-row" style="margin-bottom:16px"><div class="form-group"><label>Range</label>' +
       '<select id="analyticsDays" onchange="loadAnalytics()"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select></div>' +
       '<div class="form-group" style="display:flex;align-items:flex-end"><button type="button" class="btn btn-secondary btn-sm" onclick="loadAnalytics()">Refresh</button></div></div>' +
