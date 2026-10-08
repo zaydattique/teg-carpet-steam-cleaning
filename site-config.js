@@ -12,10 +12,19 @@
     (document.head || document.documentElement).appendChild(gv);
   }
 
-  var GMB = 'https://g.page/teg-carpet-steam-cleaning';
-  var GMB_REVIEW = 'https://g.page/teg-carpet-steam-cleaning/review';
-  var MAP_EMBED = 'https://www.google.com/maps?q=TEG+Carpet+%26+Furniture+Steam+Cleaning,+4111+N+Port+Washington+Rd+suite+1,+Milwaukee,+WI+53217&hl=en&z=16&output=embed';
-  var MAP_LINK = 'https://www.google.com/maps/search/?api=1&query=TEG+Carpet+%26+Furniture+Steam+Cleaning+4111+N+Port+Washington+Rd+Milwaukee+WI';
+  var GMB = '', GMB_REVIEW = '', MAP_EMBED = '', MAP_LINK = '';
+  function content() { return window.__TEG_CONTENT || {}; }
+  function configureFromCMS(data) {
+    data = data || content();
+    var loc=data.location||{}, contact=data.contact||{}, brand=data.branding||{};
+    var name=loc.name||brand.siteName||'';
+    var address=loc.address||contact.address||[contact.addressLine1,contact.city,contact.region,contact.postal].filter(Boolean).join(', ');
+    var query=encodeURIComponent([name,address].filter(Boolean).join(' '));
+    MAP_LINK=query?'https://www.google.com/maps/search/?api=1&query='+query:'';
+    MAP_EMBED=address?'https://www.google.com/maps?q='+encodeURIComponent(address)+'&output=embed':'';
+    GMB=loc.gmbUrl||loc.mapsUrl||'';
+    GMB_REVIEW=GMB?GMB.replace(/\\/$/,'')+'/review':'';
+  }
 
   if (!document.getElementById('teg-ui-css')) {
     var st = document.createElement('style');
@@ -24,64 +33,15 @@
     (document.head || document.documentElement).appendChild(st);
   }
 
-  if (!document.getElementById('teg-schema-ld')) {
-    var schema = {
-      '@context': 'https://schema.org',
-      '@graph': [{
-        '@type': ['LocalBusiness', 'HomeAndConstructionBusiness'],
-        '@id': 'https://tegcarpetfurniturecleaning.com/#business',
-        'name': 'T.E.G Carpet & Furniture Steam Cleaning',
-        'alternateName': ['TEG Carpet Steam Cleaning', 'T.E.G Carpet Steam Cleaning'],
-        'description': 'Professional carpet cleaning, steam cleaning, tile and grout, upholstery, area rugs, pet odor and stain removal, commercial carpet cleaning, water damage restoration, carpet stretching, and hardwood floor cleaning in Milwaukee, WI and western suburbs. Upfront pricing, kid and pet safe, licensed and insured, available 24/7.',
-        'url': 'https://tegcarpetfurniturecleaning.com/',
-        'telephone': '+1-414-775-3705',
-        'email': 'contact@tegcarpetsteamcleaning.com',
-        'image': 'https://tegcarpetfurniturecleaning.com/favicon.svg',
-        'priceRange': '$$',
-        'address': { '@type': 'PostalAddress', 'streetAddress': '4111 N Port Washington Rd suite 1', 'addressLocality': 'Milwaukee', 'addressRegion': 'WI', 'postalCode': '53217', 'addressCountry': 'US' },
-        'geo': { '@type': 'GeoCoordinates', 'latitude': 43.0895, 'longitude': -87.8910 },
-        'openingHoursSpecification': { '@type': 'OpeningHoursSpecification', 'dayOfWeek': ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'], 'opens': '00:00', 'closes': '23:59' },
-        'knowsAbout': ['carpet cleaning','steam cleaning','tile and grout cleaning','upholstery cleaning','area rug cleaning','pet odor removal','stain removal','commercial carpet cleaning','hot water extraction','water damage restoration','carpet stretching','hardwood floor cleaning'],
-        'areaServed': ['Milwaukee, WI', 'Wauwatosa, WI', 'Brookfield, WI', 'New Berlin, WI', 'West Allis, WI', 'Greenfield, WI', 'Franklin, WI', 'Muskego, WI', 'Pewaukee, WI', 'Oak Creek, WI', 'Elm Grove, WI', 'Hales Corners, WI', 'Greendale, WI'],
-        'sameAs': ['https://g.page/teg-carpet-steam-cleaning'],
-        'hasOfferCatalog': {
-          '@type': 'OfferCatalog',
-          'name': 'Cleaning services',
-          'itemListElement': [
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-carpet-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Tile and Grout Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-tile-grout.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Upholstery Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-couch-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Area Rug Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-area-rug.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Pet Odor and Stain Removal','url':'https://tegcarpetfurniturecleaning.com/service-stain-removal.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Steam Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-steam-cleaning.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Commercial Carpet Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-commercial.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Water Damage Restoration','url':'https://tegcarpetfurniturecleaning.com/service-water-damage.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Carpet Stretching and Repair','url':'https://tegcarpetfurniturecleaning.com/service-carpet-stretching.html'}},
-            {'@type':'Offer','itemOffered':{'@type':'Service','name':'Hardwood Floor Cleaning','url':'https://tegcarpetfurniturecleaning.com/service-hardwood.html'}}
-          ]
-        }
-      }, {
-        '@type': 'WebSite',
-        '@id': 'https://tegcarpetfurniturecleaning.com/#website',
-        'url': 'https://tegcarpetfurniturecleaning.com/',
-        'name': 'T.E.G Carpet & Furniture Steam Cleaning',
-        'publisher': { '@id': 'https://tegcarpetfurniturecleaning.com/#business' }
-      }]
-    };
-    var s = document.createElement('script');
-    s.type = 'application/ld+json';
-    s.id = 'teg-schema-ld';
-    s.textContent = JSON.stringify(schema);
-    (document.head || document.documentElement).appendChild(s);
-  }
-
   function injectFooterMap() {
     var footer = document.querySelector('footer.footer .container');
     if (!footer || document.getElementById('teg-footer-map')) return;
     var box = document.createElement('div');
     box.id = 'teg-footer-map';
     box.className = 'teg-footer-map';
-    box.innerHTML = '<div class="teg-footer-map-inner"><div class="teg-footer-map-head"><h4>Find us on the map</h4><a href="' + MAP_LINK + '" target="_blank" rel="noopener">Open in Google Maps</a></div><iframe title="T.E.G location map" width="600" height="220" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="' + MAP_EMBED + '" allowfullscreen></iframe><div class="teg-footer-map-addr"><strong>T.E.G Carpet & Furniture Steam Cleaning</strong>4111 N Port Washington Rd suite 1<br>Milwaukee, WI 53217</div></div>';
+    var d=content(), loc=d.location||{}, contact=d.contact||{}, brand=d.branding||{};
+    var addr=loc.address||contact.address||[contact.addressLine1,contact.city,contact.region,contact.postal].filter(Boolean).join(', ');
+    box.innerHTML = '<div class="teg-footer-map-inner"><div class="teg-footer-map-head"><h4>Find us on the map</h4><a href="' + MAP_LINK + '" target="_blank" rel="noopener">Open in Google Maps</a></div>' + (MAP_EMBED?'<iframe title="Business location map" width="600" height="220" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="' + MAP_EMBED + '" allowfullscreen></iframe>':'') + '<div class="teg-footer-map-addr"><strong>' + (brand.siteName||loc.name||'') + '</strong>' + addr + '</div></div>';
     var grid = footer.querySelector('.footer-grid');
     if (grid) footer.insertBefore(box, grid); else footer.appendChild(box);
   }
@@ -94,13 +54,15 @@
     var box = document.createElement('div');
     box.id = 'teg-contact-map-box';
     box.className = 'teg-contact-map-box';
-    var gbp = AEO_ENABLED ? '<a class="ghost" href="' + GMB + '" target="_blank" rel="noopener">Google Business Profile</a>' : '';
-    box.innerHTML = '<div class="teg-map-top"><div class="teg-map-info"><h2>Our location</h2><p>Milwaukee and western suburbs.</p><div class="teg-addr-line"><strong>Address</strong><br>4111 N Port Washington Rd suite 1<br>Milwaukee, WI 53217</div><div class="teg-addr-line"><strong>Phone</strong><br><a href="tel:+14147753705">Call Now</a></div><div class="teg-addr-line"><strong>Hours</strong><br>24/7 — Always Available</div><div class="teg-map-actions"><a class="primary" href="' + MAP_LINK + '" target="_blank" rel="noopener">Get directions</a>' + gbp + '</div></div><div class="teg-map-frame"><iframe title="Map" width="600" height="320" style="border:0" loading="lazy" src="' + MAP_EMBED + '" allowfullscreen></iframe></div></div>';
+    var gbp = AEO_ENABLED && GMB ? '<a class="ghost" href="' + GMB + '" target="_blank" rel="noopener">Google Business Profile</a>' : '';
+    var d=content(), loc=d.location||{}, contact=d.contact||{}, brand=d.branding||{};
+    var addr=loc.address||contact.address||[contact.addressLine1,contact.city,contact.region,contact.postal].filter(Boolean).join(', '), phone=contact.phoneTel||contact.phone||'', hours=contact.hours||'', city=loc.city||contact.city||'';
+    box.innerHTML = '<div class="teg-map-top"><div class="teg-map-info"><h2>Our location</h2><p>' + city + '</p><div class="teg-addr-line"><strong>Address</strong><br>' + addr + '</div><div class="teg-addr-line"><strong>Phone</strong><br><a href="tel:' + phone + '">Call Now</a></div><div class="teg-addr-line"><strong>Hours</strong><br>' + hours + '</div><div class="teg-map-actions"><a class="primary" href="' + MAP_LINK + '" target="_blank" rel="noopener">Get directions</a>' + gbp + '</div></div><div class="teg-map-frame">' + (MAP_EMBED?'<iframe title="Business location map" width="600" height="320" style="border:0" loading="lazy" src="' + MAP_EMBED + '" allowfullscreen></iframe>':'') + '</div></div>';
     section.appendChild(box);
   }
 
   function injectGmbUi() {
-    if (!AEO_ENABLED) return;
+    if (!AEO_ENABLED || !GMB) return;
     if (document.getElementById('teg-gmb-bar')) return;
     var footer = document.querySelector('footer.footer');
     if (!footer) return;
@@ -147,9 +109,7 @@
     var path = (location.pathname || '').split('/').pop() || '';
     if (path.indexOf('service-') !== 0) return;
     if (document.getElementById('teg-related-services')) return;
-    var all = [
-      {h:'service-carpet-cleaning.html',n:'Carpet Cleaning'},{h:'service-tile-grout.html',n:'Tile & Grout'},{h:'service-couch-cleaning.html',n:'Upholstery'},{h:'service-area-rug.html',n:'Area Rugs'},{h:'service-stain-removal.html',n:'Pet Odor & Stain'},{h:'service-steam-cleaning.html',n:'Steam Cleaning'},{h:'service-commercial.html',n:'Commercial'},{h:'service-water-damage.html',n:'Water Damage'},{h:'service-carpet-stretching.html',n:'Carpet Stretching'},{h:'service-hardwood.html',n:'Hardwood Floors'}
-    ];
+    var all = (content().services || []).map(function(s){ return {h:s.href||'',n:s.name||''}; }).filter(function(s){return s.h && s.n;});
     var links = all.filter(function(x){ return x.h !== path; }).slice(0,6).map(function(x){ return '<a href="'+x.h+'">'+x.n+'</a>'; }).join('');
     var box = document.createElement('section');
     box.id = 'teg-related-services';
@@ -177,14 +137,17 @@
     injectFooterMap();
     injectContactMapBox();
     injectGmbUi();
-    ensureReviewsNav();
-    localizeAreaServiceTitles();
+    configureFromCMS(content());
     injectRelatedServices();
-    injectAnswerFacts();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceUI);
-  else forceUI();
+  function start() {
+    fetch('/api/content').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d)window.__TEG_CONTENT=d;configureFromCMS(d||{});}).catch(function(){}).then(function(){
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forceUI, { once: true });
+      else forceUI();
+    });
+  }
+  start();
 
   window.TEG_SITE = { forceUI: forceUI, AEO_ENABLED: AEO_ENABLED };
 })();
