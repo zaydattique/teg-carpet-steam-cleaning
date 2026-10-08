@@ -102,7 +102,8 @@ html,body{max-width:100vw;overflow-x:hidden;font-family:Inter,system-ui,sans-ser
 <button class="active" data-panel="branding" onclick="showPanel('branding')">Branding & Logo</button>
 <button data-panel="contact" onclick="showPanel('contact')">Phone / Address</button>
 <button data-panel="media" onclick="showPanel('media')">Media & Uploads</button>
-<button data-panel="pageheroes" onclick="showPanel('pageheroes')">Page hero images</button>
+<button data-panel="pageheroes" onclick="showPanel('pageheroes')">Page media</button>
+<button data-panel="pagecontent" onclick="showPanel('pagecontent')">Page content</button>
 <button data-panel="beforeafter" onclick="showPanel('beforeafter');renderBeforeAfterPanel()">Before / After</button>
 <div class="group">SEO</div>
 <button data-panel="seo" onclick="showPanel('seo')">Global SEO</button>
@@ -166,6 +167,12 @@ html,body{max-width:100vw;overflow-x:hidden;font-family:Inter,system-ui,sans-ser
 <p style="font-size:13px;color:#64748b;margin-bottom:12px">Set hero images and replace any image or video on each page.</p>
 <div id="pageHeroesList"></div>
 <div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save heroes</button></div>
+</div>
+
+<div class="panel" id="panel-pagecontent">
+<h2>Page Content</h2>
+<div id="pageContentList"></div>
+<div class="actions-bar"><button class="btn btn-primary" onclick="saveAll()">Save page content</button></div>
 </div>
 
 <div class="panel" id="panel-beforeafter">
