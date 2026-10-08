@@ -39,7 +39,7 @@ ADMIN_PASSWORD=your-secure-password PORT=3000 npm start
 
 Used in:
 - Form mailto fallback (`script.js`)
-- `content.json` / `data/content.json`
+- `data/content.json`
 - Schema / `site-config.js`
 - Footers and contact pages
 - `llms.txt`
