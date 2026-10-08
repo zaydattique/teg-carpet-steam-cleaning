@@ -30,9 +30,25 @@ ADMIN_PASSWORD=your-secure-password PORT=3000 npm start
 1. Connect the GitHub repo in Hostinger (or upload files)
 2. Set `ADMIN_PASSWORD` in the hosting environment / Node app settings
 3. `npm install && npm start` (or let Hostinger handle the start command)
-4. Point the domain to the app
+4. Add the Resend environment variables below
+5. Point the domain to the app
 
 **Important:** Backend must be running for form save + admin + email notification. `ADMIN_PASSWORD` is required; there is no hardcoded production password.
+
+### Email notification (Resend)
+Estimate notifications are sent server-side through Resend. FormSubmit is not used.
+
+Set these environment variables in Hostinger / production:
+```bash
+ADMIN_PASSWORD=your-secure-password
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM=T.E.G Carpet Cleaning <contact@tegcarpetsteamcleaning.com>
+NOTIFY_EMAIL=zaidattique321@gmail.com
+# Optional: comma-separated additional recipients
+NOTIFY_CC_EMAIL=
+```
+
+`RESEND_FROM` must use a sender/domain verified in Resend. Never commit `RESEND_API_KEY` to the repository.
 
 ## Contact email (canonical)
 **contact@tegcarpetsteamcleaning.com**
@@ -44,7 +60,7 @@ Used in:
 - Footers and contact pages
 - `llms.txt`
 
-Forms post to `/api/contact`; the backend saves every lead to `data/submissions.json` and sends the estimate notification through FormSubmit. The current notification target is `NOTIFY_EMAIL` (default: `zaidattique321@gmail.com`). `NOTIFY_CC_EMAIL` can be set later for the client. FormSubmit requires one-time email activation before delivery.
+Forms post to `/api/contact`; the backend saves every lead to `data/submissions.json` and sends the estimate notification through Resend. The current notification target is `NOTIFY_EMAIL` (default: `zaidattique321@gmail.com`). `NOTIFY_CC_EMAIL` can be set later for the client.
 
 ## Pages
 | File | Description |

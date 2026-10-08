@@ -13,7 +13,7 @@ const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS
 if (!ADMIN_PASSWORD) {
   throw new Error('ADMIN_PASSWORD environment variable is required. Refusing to start with a hardcoded admin password.');
 }
-/** Email address that receives every Get-an-Estimate lead through FormSubmit. */
+/** Email address that receives every Get-an-Estimate lead. */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'zaidattique321@gmail.com';
 const NOTIFY_CC_EMAIL = (process.env.NOTIFY_CC_EMAIL || '').trim();
 const DATA_DIR = path.join(__dirname, 'data');
@@ -119,48 +119,70 @@ async function sendOwnerNotification(entry) {
     '',
     'Submitted: ' + entry.createdAt,
     'Lead ID: ' + entry.id
-  ].join('\n');
-  const htmlBody = '<h2>New Get-an-Estimate lead</h2><p><strong>Name:</strong> ' + entry.name + '<br><strong>Phone:</strong> ' + entry.phone + '<br><strong>Email:</strong> ' + entry.email + '<br><strong>Service:</strong> ' + (entry.service || '(not specified)') + '</p><p><strong>Message:</strong><br>' + (entry.message || '(none)').replace(/\n/g, '<br>') + '</p><p style="color:#666;font-size:12px">Submitted: ' + entry.createdAt + ' · Lead ID: ' + entry.id + '</p>';
+  ].join('\\n');
 
-  // FormSubmit delivers to the configured owner email; the default is only for this test deployment.
+  const esc = (value) => String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  const htmlBody = '<div style="font-family:Arial,sans-serif;line-height:1.6;color:#222">' +
+    '<h2 style="margin:0 0 16px">New Get-an-Estimate lead</h2>' +
+    '<p><strong>Name:</strong> ' + esc(entry.name) +
+    '<br><strong>Phone:</strong> ' + esc(entry.phone) +
+    '<br><strong>Email:</strong> ' + esc(entry.email) +
+    '<br><strong>Service:</strong> ' + esc(entry.service || '(not specified)') + '</p>' +
+    '<p><strong>Details:</strong><br>' + esc(entry.message || '(none)').replace(/\\n/g, '<br>') + '</p>' +
+    '<p style="color:#666;font-size:12px">Submitted: ' + esc(entry.createdAt) + ' · Lead ID: ' + esc(entry.id) + '</p>' +
+    '</div>';
+
+  const apiKey = (process.env.RESEND_API_KEY || '').trim();
+  const from = (process.env.RESEND_FROM || 'T.E.G Carpet Cleaning <contact@tegcarpetsteamcleaning.com>').trim();
+
+  if (!apiKey) {
+    return { sent: false, reason: 'RESEND_API_KEY is not configured' };
+  }
+
   try {
-    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
+    const recipients = [NOTIFY_EMAIL]
+      .concat(NOTIFY_CC_EMAIL ? NOTIFY_CC_EMAIL.split(',').map((email) => email.trim()).filter(Boolean) : []);
+
+    const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Origin: 'https://tegcarpetfurniturecleaning.com',
-        Referer: 'https://tegcarpetfurniturecleaning.com/contact.html'
+        Authorization: 'Bearer ' + apiKey,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: entry.name,
-        email: entry.email,
-        phone: entry.phone,
-        service: entry.service || '',
-        message: textBody,
-        _replyto: entry.email,
-        _subject: subject,
-        _template: 'table',
-        _url: 'https://tegcarpetfurniturecleaning.com/contact.html',
-        ...(NOTIFY_CC_EMAIL ? { _cc: NOTIFY_CC_EMAIL } : {})
+        from,
+        to: recipients,
+        reply_to: entry.email,
+        subject,
+        text: textBody,
+        html: htmlBody
       })
     });
+
     const raw = await res.text().catch(() => '');
     let data = {};
     try { data = JSON.parse(raw); } catch (_) {}
+
     if (!res.ok) {
-      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + raw.slice(0, 160) };
+      return {
+        sent: false,
+        reason: 'Resend HTTP ' + res.status + (data.message ? ': ' + data.message : '')
+      };
     }
-    // FormSubmit's AJAX endpoint documents JSON responses but does not
-    // guarantee a success field. Treat 2xx as accepted unless it explicitly
-    // reports success:false. This avoids false failures on valid 2xx replies.
-    if (data && (data.success === false || data.success === 'false')) {
-      return { sent: false, reason: data.message || 'FormSubmit rejected the submission' };
+
+    if (!data.id) {
+      return { sent: false, reason: 'Resend did not return an email ID' };
     }
-    console.log('FormSubmit accepted notification for', NOTIFY_EMAIL, '| status:', res.status, '| response:', raw.slice(0, 200));
-    return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit', formsubmit: data };
+
+    console.log('Resend accepted notification for', recipients.join(', '), '| email id:', data.id);
+    return { sent: true, to: recipients.join(', '), via: 'resend', resendId: data.id };
   } catch (e) {
-    return { sent: false, reason: e.message || 'FormSubmit failed' };
+    return { sent: false, reason: e.message || 'Resend request failed' };
   }
 }
 
@@ -195,8 +217,7 @@ app.post('/api/contact', async (req, res) => {
     message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery failed.',
     id: entry.id,
     emailSent: !!emailResult.sent,
-    emailProvider: emailResult.via || null,
-    emailError: emailResult.sent ? null : (emailResult.reason || 'Email notification failed')
+    emailProvider: emailResult.via || null
   });
 });
 
@@ -305,5 +326,5 @@ app.use((req, res) => {
 app.listen(PORT, HOST, () => {
   console.log('T.E.G server running on http://' + HOST + ':' + PORT);
   console.log('Admin auth: use ADMIN_PASSWORD environment variable');
-  console.log('Owner notify email:', NOTIFY_EMAIL, '| provider: FormSubmit');
+  console.log('Owner notify email:', NOTIFY_EMAIL, '| provider: Resend');
 });
