@@ -17,6 +17,7 @@
   function el(id) { return document.getElementById(id); }
   function value(id) { var e = el(id); return e ? e.value.trim() : ''; }
   function setValue(id, v) { var e = el(id); if (e) e.value = v == null ? '' : String(v); }
+  function fieldValue(id, fallback) { var e=el(id); return e ? e.value.trim() : (fallback == null ? '' : String(fallback)); }
   function esc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function clone(v) { return JSON.parse(JSON.stringify(v || {})); }
   function current() { if (!window.__TEG_ADMIN_DATA) window.__TEG_ADMIN_DATA = {}; return window.__TEG_ADMIN_DATA; }
@@ -90,7 +91,7 @@
   }
   function assignRole(key,url,save) {
     var d=current(); d.media=d.media||{}; d.branding=d.branding||{}; d.seo=d.seo||{};
-    if(key==='logo'){d.media.logo=url;d.branding.logoUrl=url;}
+    if(key==='logo'){d.media.logo=url;d.branding.logoUrl=url;setValue('brand-logo',url);}
     if(key==='favicon'){d.media.favicon=url;d.branding.faviconUrl=url;}
     if(key==='heroImage')d.media.heroImage=url;
     if(key==='heroVideo')d.media.heroVideo=url;
@@ -209,12 +210,12 @@
   var oldCollect=window.collect;
   window.collect=function(){
     var d=clone(current()), b=d.branding||{}, m=d.media||{}, c=d.contact||{}, s=d.seo||{}, loc=d.location||{};
-    d.branding=Object.assign({},b,{siteName:value('brand-name')||b.siteName||'',tagline:value('brand-tagline'),logoText:value('brand-tagline')||b.logoText||'',logoUrl:m.logo||b.logoUrl||''});
-    d.media=Object.assign({},m,{logo:value('brand-logo')||m.logo||'',favicon:m.favicon||b.faviconUrl||'',ogImage:value('seo-ogImage')||m.ogImage||''});
+    d.branding=Object.assign({},b,{siteName:fieldValue('brand-name',b.siteName),tagline:fieldValue('brand-tagline',b.tagline||b.logoText),logoText:fieldValue('brand-tagline',b.logoText),logoUrl:m.logo||b.logoUrl||''});
+    d.media=Object.assign({},m,{logo:fieldValue('brand-logo',m.logo),favicon:m.favicon == null ? (b.faviconUrl||'') : m.favicon,ogImage:fieldValue('seo-ogImage',m.ogImage)});
     d.branding.logoUrl=d.media.logo; d.branding.faviconUrl=d.media.favicon;
-    d.contact=Object.assign({},c,{phone:value('contact-phone')||c.phone||'',phoneTel:value('contact-phoneTel')||c.phoneTel||'',email:value('contact-email')||c.email||'',addressLine1:value('contact-street')||c.addressLine1||'',address:[value('contact-street')||c.addressLine1||'',value('contact-city')||c.city||'',value('contact-state')||c.region||'',value('contact-zip')||c.postal||''].filter(Boolean).join(', '),city:value('contact-city')||c.city||'',region:value('contact-state')||c.region||'',postal:value('contact-zip')||c.postal||'',hours:value('contact-hours')||c.hours||'',sms:value('contact-sms')||c.sms||''});
-    d.seo=Object.assign({},s,{title:value('seo-title')||s.title||'',description:value('seo-description')||s.description||'',keywords:value('seo-keywords')||s.keywords||'',ogTitle:value('seo-ogTitle')||s.ogTitle||'',ogDescription:value('seo-ogDescription')||s.ogDescription||'',ogImage:value('seo-ogImage')||m.ogImage||'',canonical:value('seo-canonical')||s.canonical||'',twitterTitle:value('seo-twitterTitle')||s.twitterTitle||'',twitterDescription:value('seo-twitterDescription')||s.twitterDescription||'',twitterImage:value('seo-twitterImage')||value('seo-ogImage')||s.twitterImage||m.ogImage||''});
-    d.location=Object.assign({},loc,{name:value('loc-name')||loc.name||'',address:value('loc-address')||d.contact.address||'',city:value('loc-city')||d.contact.city||'',region:value('loc-region')||d.contact.region||'',postal:value('loc-postal')||d.contact.postal||'',geoRegion:value('loc-geoRegion')||loc.geoRegion||'',lat:value('loc-lat')||loc.lat||'',lng:value('loc-lng')||loc.lng||'',gmbUrl:value('loc-gmb')||loc.gmbUrl||''});
+    d.contact=Object.assign({},c,{phone:fieldValue('contact-phone',c.phone),phoneTel:fieldValue('contact-phoneTel',c.phoneTel),email:fieldValue('contact-email',c.email),addressLine1:fieldValue('contact-street',c.addressLine1),address:[fieldValue('contact-street',c.addressLine1),fieldValue('contact-city',c.city),fieldValue('contact-state',c.region),fieldValue('contact-zip',c.postal)].filter(Boolean).join(', '),city:fieldValue('contact-city',c.city),region:fieldValue('contact-state',c.region),postal:fieldValue('contact-zip',c.postal),hours:fieldValue('contact-hours',c.hours),sms:fieldValue('contact-sms',c.sms)});
+    d.seo=Object.assign({},s,{title:fieldValue('seo-title',s.title),description:fieldValue('seo-description',s.description),keywords:fieldValue('seo-keywords',s.keywords),ogTitle:fieldValue('seo-ogTitle',s.ogTitle),ogDescription:fieldValue('seo-ogDescription',s.ogDescription),ogImage:fieldValue('seo-ogImage',m.ogImage),canonical:fieldValue('seo-canonical',s.canonical),twitterTitle:fieldValue('seo-twitterTitle',s.twitterTitle),twitterDescription:fieldValue('seo-twitterDescription',s.twitterDescription),twitterImage:fieldValue('seo-twitterImage',s.twitterImage||m.ogImage)});
+    d.location=Object.assign({},loc,{name:fieldValue('loc-name',loc.name),address:fieldValue('loc-address',d.contact.address),city:fieldValue('loc-city',d.contact.city),region:fieldValue('loc-region',d.contact.region),postal:fieldValue('loc-postal',d.contact.postal),geoRegion:fieldValue('loc-geoRegion',loc.geoRegion),lat:fieldValue('loc-lat',loc.lat),lng:fieldValue('loc-lng',loc.lng),gmbUrl:fieldValue('loc-gmb',loc.gmbUrl)});
     if(el('servicesList')&&typeof collectServices==='function')d.services=collectServices();
     if(typeof collectNav==='function')d.nav={main:collectNav('main'),footer:collectNav('footer'),services:collectNav('services')};
     d.pages=window._pagesSeo||d.pages||{};
