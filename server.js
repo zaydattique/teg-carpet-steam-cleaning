@@ -3,7 +3,6 @@
  * Contact form, admin content API, media upload, static site, analytics
  */
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
@@ -13,9 +12,9 @@ try { nodemailer = require('nodemailer'); } catch (e) { console.warn('nodemailer
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
-const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || 'teg2026').trim();
-if (!process.env.ADMIN_PASSWORD && !process.env.TEG_ADMIN_PASS) {
-  console.warn('WARNING: ADMIN_PASSWORD not set — using default. Set ADMIN_PASSWORD env on Hostinger for production.');
+const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || process.env.TEG_ADMIN_PASS || '').trim();
+if (!ADMIN_PASSWORD) {
+  throw new Error('ADMIN_PASSWORD environment variable is required. Refusing to start with a hardcoded admin password.');
 }
 /** Email address that receives every Get-an-Estimate lead (FormSubmit / SMTP). */
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || process.env.TEG_NOTIFY_EMAIL || 'zaidattique321@gmail.com';
@@ -24,6 +23,7 @@ const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_FROM = process.env.SMTP_FROM || SMTP_USER || NOTIFY_EMAIL;
+const NOTIFY_CC_EMAIL = (process.env.NOTIFY_CC_EMAIL || '').trim();
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
@@ -79,7 +79,6 @@ function getContent() {
 }
 if (!fs.existsSync(CONTENT_FILE)) writeJSON(CONTENT_FILE, DEFAULT_CONTENT);
 
-app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(UPLOADS_DIR));
@@ -163,7 +162,8 @@ async function sendOwnerNotification(entry) {
         _replyto: entry.email,
         _subject: subject,
         _template: 'table',
-        _captcha: 'false'
+        _url: 'https://tegcarpetfurniturecleaning.com/contact.html',
+        ...(NOTIFY_CC_EMAIL ? { _cc: NOTIFY_CC_EMAIL } : {})
       })
     });
     const raw = await res.text().catch(() => '');
@@ -172,13 +172,13 @@ async function sendOwnerNotification(entry) {
     if (!res.ok) {
       return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + raw.slice(0, 160) };
     }
-    // FormSubmit's AJAX API should explicitly confirm success. A 200 alone
-    // is not proof that the email was accepted for delivery.
-    const confirmed = data && (data.success === true || data.success === 'true');
-    if (!confirmed) {
-      return { sent: false, reason: (data && data.message) || raw.slice(0, 160) || 'FormSubmit did not confirm delivery' };
+    // FormSubmit's AJAX endpoint documents JSON responses but does not
+    // guarantee a success field. Treat 2xx as accepted unless it explicitly
+    // reports success:false. This avoids false failures on valid 2xx replies.
+    if (data && (data.success === false || data.success === 'false')) {
+      return { sent: false, reason: data.message || 'FormSubmit rejected the submission' };
     }
-    console.log('FormSubmit accepted notification for', NOTIFY_EMAIL, '| response:', raw.slice(0, 200));
+    console.log('FormSubmit accepted notification for', NOTIFY_EMAIL, '| status:', res.status, '| response:', raw.slice(0, 200));
     return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit', formsubmit: data };
   } catch (e) {
     return { sent: false, reason: e.message || 'FormSubmit failed' };
@@ -211,7 +211,14 @@ app.post('/api/contact', async (req, res) => {
     console.error('Owner notify email failed:', err.message);
   }
 
-  res.json({ ok: true, message: 'Quote request received.', id: entry.id, emailSent: !!emailResult.sent });
+  res.json({
+    ok: true,
+    message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery could not be confirmed.',
+    id: entry.id,
+    emailSent: !!emailResult.sent,
+    emailProvider: emailResult.via || null,
+    emailError: emailResult.sent ? null : (emailResult.reason || 'Email notification failed')
+  });
 });
 
 app.post('/api/analytics/event', (req, res) => {
