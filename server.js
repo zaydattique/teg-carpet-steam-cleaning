@@ -126,7 +126,12 @@ async function sendOwnerNotification(entry) {
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Origin: 'https://tegcarpetfurniturecleaning.com',
+        Referer: 'https://tegcarpetfurniturecleaning.com/contact.html'
+      },
       body: JSON.stringify({
         name: entry.name,
         email: entry.email,
@@ -187,7 +192,7 @@ app.post('/api/contact', async (req, res) => {
 
   res.json({
     ok: true,
-    message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery could not be confirmed.',
+    message: emailResult.sent ? 'Quote request received.' : 'Quote request saved, but email delivery failed.'
     id: entry.id,
     emailSent: !!emailResult.sent,
     emailProvider: emailResult.via || null,
