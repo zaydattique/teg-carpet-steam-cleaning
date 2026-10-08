@@ -23,7 +23,7 @@ function showToast(msg, ok) {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 function esc(s) {
-  return String(s || '').replace(/&/g, '&').replace(/"/g, '"').replace(/</g, '<');
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;');
 }
 function toggleSidebar() {
   const s = document.getElementById('adminSidebar');
