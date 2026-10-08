@@ -149,7 +149,7 @@ async function sendOwnerNotification(entry) {
     return { sent: true, to: NOTIFY_EMAIL, via: 'smtp' };
   }
 
-  // No SMTP needed: FormSubmit delivers to owner email
+  // No SMTP needed: FormSubmit delivers to owner email (hardcoded default — no env required)
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(NOTIFY_EMAIL), {
       method: 'POST',
@@ -159,17 +159,24 @@ async function sendOwnerNotification(entry) {
         email: entry.email,
         phone: entry.phone,
         service: entry.service || '',
-        message: entry.message || '',
+        message: textBody,
+        _replyto: entry.email,
         _subject: subject,
         _template: 'table',
         _captcha: 'false'
       })
     });
+    const raw = await res.text().catch(() => '');
+    let data = {};
+    try { data = JSON.parse(raw); } catch (_) {}
     if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + errText.slice(0, 120) };
+      return { sent: false, reason: 'FormSubmit HTTP ' + res.status + ' ' + raw.slice(0, 160) };
     }
-    return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit' };
+    if (data && data.success === false) {
+      return { sent: false, reason: data.message || raw.slice(0, 160) || 'FormSubmit rejected' };
+    }
+    console.log('FormSubmit response:', raw.slice(0, 200));
+    return { sent: true, to: NOTIFY_EMAIL, via: 'formsubmit', formsubmit: data };
   } catch (e) {
     return { sent: false, reason: e.message || 'FormSubmit failed' };
   }
