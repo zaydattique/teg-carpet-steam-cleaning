@@ -70,7 +70,7 @@
       ? keys.map(function (k) { return '<div class="sub-card" style="display:flex;justify-content:space-between"><span>' + k + '</span><strong>' + by[k] + '</strong></div>'; }).join('')
       : '<p style="color:#94a3b8">No events yet.</p>';
     document.getElementById('analyticsRecent').innerHTML = (d.recent || []).slice(0, 40).map(function (e) {
-      return '<div style="padding:6px 0;border-bottom:1px solid #e2e8f0"><strong>' + (e.event || '') + '</strong> · ' + (e.path || '') + ' <span style="color:#94a3b8">' + (e.ts || '') + '</span></div>';
+      return '<div style="padding:6px 0;border-bottom:1px solid #e2e8f0"><strong>' + esc(e.event || '') + '</strong> · ' + esc(e.path || '') + ' <span style="color:#94a3b8">' + esc(e.ts || '') + '</span></div>';
     }).join('') || '<p style="color:#94a3b8">No recent events.</p>';
   }
   var orig = window.showPanel;
